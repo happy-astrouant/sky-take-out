@@ -1,6 +1,12 @@
 server:
   port: 8080
 
+springdoc:
+  swagger-ui:
+    url: /v3/api-docs/swagger-config
+    path: /swagger-ui/index.html
+  packages-to-scan: com.sky.controller.admin  # 控制器所在包
+
 spring:
   profiles:
     active: dev
