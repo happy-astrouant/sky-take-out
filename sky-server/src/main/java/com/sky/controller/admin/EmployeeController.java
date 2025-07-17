@@ -10,10 +10,7 @@ import com.sky.utils.JwtUtil;
 import com.sky.vo.EmployeeLoginVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -68,6 +65,18 @@ public class EmployeeController {
      */
     @PostMapping("/logout")
     public Result<String> logout() {
+        return Result.success();
+    }
+
+    /**
+     * 修改密码
+     *
+     * @return
+     */
+    @PutMapping("/editPassword")
+    public Result<String> editPassword(@RequestBody Map<String, Object> map) {
+        log.info("员工修改密码：{}", map);
+        employeeService.editPassword(map);
         return Result.success();
     }
 

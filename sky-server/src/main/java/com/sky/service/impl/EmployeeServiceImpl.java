@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import java.util.Map;
+
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
@@ -54,6 +56,16 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         //3、返回实体对象
         return employee;
+    }
+
+    @Override
+    public void editPassword(Map<String,  Object> map) {
+        String oldPassword = (String) map.get("oldPassword");
+        Integer id = (Integer) map.get("empId");
+        String password = (String) map.get("newPassword");
+        String passwordMD5 = DigestUtils.md5DigestAsHex(password.getBytes());
+        String oldPasswordMD5 = DigestUtils.md5DigestAsHex(oldPassword.getBytes());
+        employeeMapper.editPassword(id, oldPasswordMD5, passwordMD5);
     }
 
 }
