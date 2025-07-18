@@ -41,4 +41,7 @@ public interface DishMapper {
     @AutoFill(value = OperationType.UPDATE)
     @Update("update dish set status = #{status} where id = #{id}")
     void updateStatus(Dish dish);
+
+    @Update("update setmeal_dish set name = #{name}, price = #{price} where dish_id = #{id}")
+    void updateSetmeal(Dish dish);
 }

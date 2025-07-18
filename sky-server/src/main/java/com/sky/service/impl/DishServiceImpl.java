@@ -50,6 +50,9 @@ public class DishServiceImpl implements DishService {
             list.forEach(dishFlavor -> dishFlavor.setDishId(dishDTO.getId()));
             dishFlavorMapper.batchInsert(dishDTO.getFlavors());
         }
+
+        // 还需同步更新套餐数据
+        dishMapper.updateSetmeal(dish);
     }
 
     @Override
