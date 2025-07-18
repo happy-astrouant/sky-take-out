@@ -15,7 +15,7 @@ public interface CategoryService {
 
     void startOrStop(Integer status, Long id);
 
-    void save(Category category);
+    boolean save(Category category);
 
     void delete(Long id);
 

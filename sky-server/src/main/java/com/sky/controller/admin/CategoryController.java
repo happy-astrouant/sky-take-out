@@ -60,12 +60,11 @@ public class CategoryController {
     @PostMapping
     public Result save(@RequestBody Category category) {
         log.info("新增分类：{}", category);
-        // 需要检查新增分类的名称是否存在，如果存在则返回错误
-        if(categoryService.existByName(category.getName())){
-            return Result.error("该分类已存在，请重新命名");
-        }
-        categoryService.save(category);
-        return Result.success();
+        boolean res = categoryService.save(category);
+        if(res)
+            return Result.success();
+        else
+            return Result.error("新增分类失败，已存在该分类");
     }
 
     /**
