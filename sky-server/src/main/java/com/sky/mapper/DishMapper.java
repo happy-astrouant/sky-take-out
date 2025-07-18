@@ -30,4 +30,7 @@ public interface DishMapper {
     int countSetmealByDishIds(Long[] ids);
 
     List<Dish> page(Dish dish);
+
+    @Select("select * from dish where id = #{id}")
+    Dish getById(Long id);
 }

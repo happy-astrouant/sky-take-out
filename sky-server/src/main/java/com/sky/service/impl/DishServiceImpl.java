@@ -11,6 +11,7 @@ import com.sky.mapper.DishMapper;
 import com.sky.mapper.OrderMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
+import com.sky.vo.DishVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -82,5 +83,17 @@ public class DishServiceImpl implements DishService {
         List<Dish> page = dishMapper.page(dish);
         PageInfo<Dish> pageInfo = new PageInfo<>(page);
         return new PageResult(pageInfo.getTotal(), pageInfo.getList());
+    }
+
+    @Override
+    public DishVO getByIdWithFlavors(Long id) {
+        // 首先查询dish表
+        Dish dish = dishMapper.getById(id);
+        DishVO dishVO = new DishVO();
+        BeanUtils.copyProperties(dish, dishVO);
+        // 查询口味数据
+        List<DishFlavor> flavors = dishFlavorMapper.list(id);
+        dishVO.setFlavors(flavors);
+        return dishVO;
     }
 }
