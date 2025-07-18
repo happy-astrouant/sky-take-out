@@ -8,6 +8,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.List;
+
 @Mapper
 public interface DishMapper {
 
@@ -26,4 +28,6 @@ public interface DishMapper {
     int countEnableDishByIds(Long[] ids);
 
     int countSetmealByDishIds(Long[] ids);
+
+    List<Dish> page(Dish dish);
 }

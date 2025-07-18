@@ -3,6 +3,8 @@ package com.sky.controller.admin;
 
 import com.sky.constant.MessageConstant;
 import com.sky.dto.DishDTO;
+import com.sky.dto.DishPageQueryDTO;
+import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.DishService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,5 +44,14 @@ public class DishController {
     public Result save(@RequestBody DishDTO dishDTO) {
         dishService.save(dishDTO);
         return Result.success();
+    }
+
+    /**
+     * 菜品分页查询
+     */
+    @GetMapping("/page")
+    public Result page(DishPageQueryDTO dishPageQueryDTO) {
+        PageResult pageResult = dishService.page(dishPageQueryDTO);
+        return Result.success(pageResult);
     }
 }
