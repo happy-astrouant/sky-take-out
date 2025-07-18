@@ -5,9 +5,7 @@ import com.sky.dto.DishDTO;
 import com.sky.result.Result;
 import com.sky.service.DishService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("admin/dish")
@@ -31,6 +29,15 @@ public class DishController {
         boolean res = dishService.delete(ids);
         if(!res)
             return Result.error("删除菜品失败，订单中存在该菜品");
+        return Result.success();
+    }
+
+    /**
+     * 新增菜品
+     */
+    @PostMapping
+    public Result save(@RequestBody DishDTO dishDTO) {
+        dishService.save(dishDTO);
         return Result.success();
     }
 }
