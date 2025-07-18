@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -26,4 +27,8 @@ public interface EmployeeMapper {
     List<Employee> page(String name);
 
     void save(Employee employee);
+
+    @Update("update employee set status = #{status}, update_time = #{now}, update_user = #{currentId}  " +
+            "where id = #{id}")
+    void updateStatus(Integer status, Long id, LocalDateTime now, Long currentId);
 }

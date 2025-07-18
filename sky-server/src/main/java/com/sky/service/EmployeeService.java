@@ -21,4 +21,6 @@ public interface EmployeeService {
     PageResult page(Integer page, Integer pageSize, String name);
 
     void save(Employee employee);
+
+    void startOrStop(Integer status, Long id);
 }

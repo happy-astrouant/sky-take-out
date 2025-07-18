@@ -94,10 +94,18 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setUpdateTime(LocalDateTime.now());
         // 设置默认密码
         employee.setPassword(MD5Utils.md5("123456"));
+        // 设置默认状态
+        employee.setStatus(StatusConstant.DISABLE);
         // 设置创建人和修改人
         employee.setCreateUser(BaseContext.getCurrentId());
         employee.setUpdateUser(BaseContext.getCurrentId());
         employeeMapper.save(employee);
+    }
+
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        // 设置update时间
+        employeeMapper.updateStatus(status, id, LocalDateTime.now(), BaseContext.getCurrentId());
     }
 
 }
