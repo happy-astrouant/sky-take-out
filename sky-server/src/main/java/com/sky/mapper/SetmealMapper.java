@@ -38,4 +38,13 @@ public interface SetmealMapper {
     @Select("select count(1) from setmeal_dish s left join dish d on s.dish_id = d.id where setmeal_id = #{id} " +
             "and d.status = 0")
     int countDishBySetmealId(Long id);
+
+    @Delete("delete from setmeal where id in (#{id})")
+    void delete(List<Long> ids);
+
+    @Delete("delete from setmeal_dish where setmeal_id in (#{id})")
+    void deleteDishBySetmealId(List<Long> ids);
+
+    @Select("select count(1) from setmeal where name = #{name}")
+    int countByName(@Param("name") String name);
 }

@@ -44,7 +44,11 @@ public class SetmealController {
     @PostMapping
     public Result save(@RequestBody SetmealDTO setmealDTO) {
         log.info("套餐-保存：{}", setmealDTO);
-        setmealService.save(setmealDTO);
+        try {
+            setmealService.save(setmealDTO);
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
         return Result.success();
     }
 

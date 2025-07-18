@@ -48,4 +48,11 @@
            #{createTime}, #{updateTime}, #{createUser}, #{updateUser},
            #{image}, #{description})
     </insert>
+
+    <delete id="deleteDishBySetmealId">
+        delete from setmeal_dish where setmeal_id in
+             <foreach collection="list" item="id" separator="," open="(" close=")">
+                 #{id}
+             </foreach>
+    </delete>
 </mapper>

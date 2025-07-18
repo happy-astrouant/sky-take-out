@@ -8,6 +8,7 @@ import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
+import com.sky.exception.CreateFailedException;
 import com.sky.exception.SetmealEnableFailedException;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
@@ -56,6 +57,9 @@ public class SetmealServiceImpl implements SetmealService {
     @Override
     @Transactional
     public void save(SetmealDTO setmealDTO) {
+        // 需要先检查名称重复与否
+        boolean exist = setmealMapper.countByName(setmealDTO.getName()) > 0;
+        if(exist) throw new CreateFailedException(MessageConstant.SETMEAL_NAME_EXIST);
         // 先保存主表
         Setmeal setmeal = new Setmeal();
         BeanUtils.copyProperties(setmealDTO, setmeal);
@@ -85,6 +89,7 @@ public class SetmealServiceImpl implements SetmealService {
 
     @Override
     public void delete(List<Long> ids) {
-        //
+        setmealMapper.delete(ids);
+        setmealMapper.deleteDishBySetmealId(ids);
     }
 }
