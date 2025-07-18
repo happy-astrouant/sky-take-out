@@ -2,13 +2,13 @@ package com.sky.controller.admin;
 
 
 import com.sky.dto.SetmealDTO;
+import com.sky.dto.SetmealPageQueryDTO;
+import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.SetmealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -23,8 +23,32 @@ public class SetmealController {
     * */
     @PutMapping
     public Result update(SetmealDTO setmealDTO) {
-        log.info("修改套餐内容：{}", setmealDTO);
+        log.info("套餐-更新内容：{}", setmealDTO);
         setmealService.update(setmealDTO);
+        return Result.success();
+    }
+
+    /*分页查询*/
+    @GetMapping("/page")
+    public Result<PageResult> page(SetmealPageQueryDTO query) {
+        log.info("套餐-分页查询：{}", query);
+        PageResult pageResult = setmealService.page(query);
+        return Result.success(pageResult);
+    }
+
+    /**新增套餐*/
+    @PostMapping
+    public Result save(@RequestBody SetmealDTO setmealDTO) {
+        log.info("套餐-保存：{}", setmealDTO);
+        setmealService.save(setmealDTO);
+        return Result.success();
+    }
+
+    /*开售或停售套餐*/
+    @PostMapping("/status/{status}")
+    public Result updateStatus(@PathVariable Integer status, Long id) {
+        log.info("套餐-{} 起售或停售：{}", id, status);
+        setmealService.updateStatus(status, id);
         return Result.success();
     }
 

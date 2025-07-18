@@ -49,6 +49,6 @@ sky:
     admin-token-name: token
   alioss:
     access-key-id: LTAI5t6asCvRHARMqNMybDD1
-    access-key-secret: ${ALIYUN_ACCESS_KEY_SECRET}
+    access-key-secret:
     endpoint: oss-cn-beijing.aliyuncs.com
     bucket-name: java-web-xzy

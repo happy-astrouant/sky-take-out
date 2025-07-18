@@ -1,14 +1,19 @@
 package com.sky.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.sky.context.BaseContext;
 import com.sky.dto.SetmealDTO;
+import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
 import com.sky.mapper.SetmealMapper;
+import com.sky.result.PageResult;
 import com.sky.service.SetmealService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,5 +39,41 @@ public class SetmealServiceImpl implements SetmealService {
             setmealMapper.insertSetmealDish(setmealDishes);
         }
 
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageResult page(SetmealPageQueryDTO query) {
+
+        PageHelper.startPage(query.getPage(), query.getPageSize());
+        List<Setmeal> setmealList = setmealMapper.page(query);
+        PageInfo<Setmeal> pageInfo = new PageInfo<>(setmealList);
+        return new PageResult(pageInfo.getTotal(), pageInfo.getList());
+    }
+
+    @Override
+    @Transactional
+    public void save(SetmealDTO setmealDTO) {
+        // 先保存主表
+        Setmeal setmeal = new Setmeal();
+        BeanUtils.copyProperties(setmealDTO, setmeal);
+        setmealMapper.insert(setmeal);
+        if(setmeal.getId() == null){
+            throw new RuntimeException("获取新套餐的主键ID失效");
+        }
+        //保存套餐-菜品关系表
+        List<SetmealDish> list = setmealDTO.getSetmealDishes();
+        if(list != null && !list.isEmpty()){
+            list.forEach(setmealDish -> setmealDish.setSetmealId(setmeal.getId()));
+            setmealMapper.insertSetmealDish(list);
+        }
+    }
+
+    @Override
+    public void updateStatus(Integer status, Long id) {
+        Setmeal setmeal = new Setmeal();
+        setmeal.setStatus(status);
+        setmeal.setId(id);
+        setmealMapper.updateStatus(setmeal);
     }
 }

@@ -30,7 +30,7 @@
         </foreach>
     </delete>
 
-    <insert id="save">
+    <insert id="save" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         insert into dish
             (name, category_id, price, image,
              description, status,
@@ -55,7 +55,7 @@
     <select id="page" resultType="com.sky.entity.Dish">
         select * from dish <where>
             <if test="name != null and name != ''">
-                and name like '%${name}%'
+                and name like concat('%',#{name},'%')
             </if>
             <if test="categoryId != null">
                 and category_id = #{categoryId}

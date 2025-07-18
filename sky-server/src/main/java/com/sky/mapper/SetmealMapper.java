@@ -2,12 +2,11 @@ package com.sky.mapper;
 
 
 import com.sky.annotation.AutoFill;
+import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
 import com.sky.enumeration.OperationType;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -25,4 +24,14 @@ public interface SetmealMapper {
 
 
     void insertSetmealDish(List<SetmealDish> setmealDishes);
+
+
+    List<Setmeal> page(SetmealPageQueryDTO query);
+
+    @AutoFill(value = OperationType.INSERT)
+    void insert(Setmeal setmeal);
+
+    @AutoFill(value = OperationType.UPDATE)
+    @Update("update setmeal set status=#{status}, update_user=#{updateUser}, update_time=#{updateTime} where id = #{id}")
+    void updateStatus(Setmeal setmeal);
 }
