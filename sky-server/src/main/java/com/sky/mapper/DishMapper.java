@@ -2,6 +2,7 @@ package com.sky.mapper;
 
 import com.sky.annotation.AutoFill;
 import com.sky.dto.DishDTO;
+import com.sky.entity.Dish;
 import com.sky.enumeration.OperationType;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -17,4 +18,7 @@ public interface DishMapper {
     void update(DishDTO dishDTO);
 
     void deleteByIds(Long[] ids);
+
+    @AutoFill(value = OperationType.INSERT)
+    void save(Dish dish);
 }

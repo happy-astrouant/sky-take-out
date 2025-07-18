@@ -6,4 +6,6 @@ public interface DishService {
     void update(DishDTO dishDTO);
 
     boolean delete(Long[] ids);
+
+    void save(DishDTO dishDTO);
 }

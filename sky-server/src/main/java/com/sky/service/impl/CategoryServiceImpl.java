@@ -69,22 +69,22 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public boolean delete(Long id) {
+    public int delete(Long id) {
         // 先查询出该分类的类型
         Integer type = categoryMapper.getTypeById(id);
         // 如果分类是菜品，需要去菜品数据库中检查是否存在关联
         if(type == 1){
             if(dishMapper.countByCategoryId(id) > 0){
-                return false;
+                return 1;
             }
         } else if(type == 2){
             if(setmealMapper.countByCategoryId(id) > 0){
-                return false;
+                return 2;
             }
         }
 
         categoryMapper.delete(id);
-        return true;
+        return 0;
     }
 
     @Override

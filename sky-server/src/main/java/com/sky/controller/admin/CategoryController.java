@@ -1,6 +1,7 @@
 package com.sky.controller.admin;
 
 
+import com.sky.constant.MessageConstant;
 import com.sky.entity.Category;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 
 @Slf4j
 @RestController
@@ -64,7 +66,7 @@ public class CategoryController {
         if(res)
             return Result.success();
         else
-            return Result.error("新增分类失败，已存在该分类");
+            return Result.error(MessageConstant.CATEGORY_ALREADY_EXIST);
     }
 
     /**
@@ -73,9 +75,11 @@ public class CategoryController {
     @DeleteMapping
     public Result delete(@RequestParam Long id) {
         log.info("删除分类：{}", id);
-        boolean res = categoryService.delete(id);
-        if(!res)
-            return Result.error("删除分类失败，该分类下存在关联数据");
+        int res = categoryService.delete(id);
+        if(res == 1)
+            return Result.error(MessageConstant.CATEGORY_BE_RELATED_BY_DISH);
+        if(res == 2)
+            return Result.error(MessageConstant.CATEGORY_BE_RELATED_BY_SETMEAL);
         return Result.success();
     }
 
