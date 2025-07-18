@@ -5,6 +5,7 @@ import java.util.List;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
+import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.entity.Employee;
 import com.sky.exception.AccountLockedException;
@@ -47,9 +48,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
         }
 
-        //密码比对
-        // TODO 后期需要进行md5加密，然后再进行比对
-        password = DigestUtils.md5DigestAsHex(password.getBytes());
+
+        password = MD5Utils.md5(password);
 
         if (!password.equals(employee.getPassword())) {
             //密码错误
@@ -60,7 +60,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             //账号被锁定
             throw new AccountLockedException(MessageConstant.ACCOUNT_LOCKED);
         }
-
+        BaseContext.setCurrentId(employee.getId());
         //3、返回实体对象
         return employee;
     }
@@ -89,10 +89,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void save(Employee employee) {
+        // 设置创建和修改时间
         employee.setCreateTime(LocalDateTime.now());
         employee.setUpdateTime(LocalDateTime.now());
-
+        // 加密密码
         employee.setPassword(MD5Utils.md5(employee.getPassword()));
+        // 设置创建人和修改人
+        employee.setCreateUser(BaseContext.getCurrentId());
+        employee.setUpdateUser(BaseContext.getCurrentId());
         employeeMapper.save(employee);
     }
 
