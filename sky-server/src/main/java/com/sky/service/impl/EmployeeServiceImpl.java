@@ -5,6 +5,7 @@ import java.util.List;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.sky.constant.MessageConstant;
+import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeLoginDTO;
@@ -98,7 +99,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setCreateTime(LocalDateTime.now());
         employee.setUpdateTime(LocalDateTime.now());
         // 设置默认密码
-        employee.setPassword(MD5Utils.md5("123456"));
+        employee.setPassword(MD5Utils.md5(PasswordConstant.DEFAULT_PASSWORD));
         // 设置默认状态
         employee.setStatus(StatusConstant.DISABLE);
         // 设置创建人和修改人
