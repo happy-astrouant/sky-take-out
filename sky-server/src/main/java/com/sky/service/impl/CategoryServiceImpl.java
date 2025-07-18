@@ -1,6 +1,7 @@
 package com.sky.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.sky.context.BaseContext;
 import com.sky.entity.Category;
 import com.sky.mapper.CategoryMapper;
 import com.sky.result.PageResult;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -28,6 +30,18 @@ public class CategoryServiceImpl implements CategoryService {
         pageResult.setTotal(num);
         pageResult.setRecords(categoryList);
         return pageResult;
+    }
+
+    @Override
+    public void update(Category category) {
+        category.setUpdateTime(LocalDateTime.now());
+        category.setUpdateUser(BaseContext.getCurrentId());
+        categoryMapper.update(category);
+    }
+
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        categoryMapper.updateStatus(status, id, LocalDateTime.now(), BaseContext.getCurrentId());
     }
 
 

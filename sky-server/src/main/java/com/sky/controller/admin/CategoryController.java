@@ -1,15 +1,13 @@
 package com.sky.controller.admin;
 
 
+import com.sky.entity.Category;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.CategoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -32,5 +30,25 @@ public class CategoryController {
             @RequestParam(required = false) Integer type) {
         PageResult pageResult = categoryService.page(page, pageSize, name, type);
         return Result.success(pageResult);
+    }
+
+
+    /**
+     * 修改分类
+     */
+    @PutMapping
+    public Result update(@RequestBody Category category){
+        categoryService.update(category);
+        return Result.success();
+    }
+
+    /**
+     * 启用、禁用分类
+     */
+    @PostMapping("/status/{status}")
+    public Result startOrStop(@PathVariable Integer status, Long id) {
+        log.info("分类{}，状态设置为：{}", id, status);
+        categoryService.startOrStop(status, id);
+        return Result.success();
     }
 }
