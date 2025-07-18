@@ -17,9 +17,7 @@ import com.sky.service.EmployeeService;
 import com.sky.utils.MD5Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 
@@ -66,13 +64,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public void editPassword(Map<String,  Object> map) {
+    public boolean editPassword(Map<String,  Object> map) {
         String oldPassword = (String) map.get("oldPassword");
         Integer id = (Integer) map.get("empId");
         String password = (String) map.get("newPassword");
         String passwordMD5 = DigestUtils.md5DigestAsHex(password.getBytes());
         String oldPasswordMD5 = DigestUtils.md5DigestAsHex(oldPassword.getBytes());
-        employeeMapper.editPassword(id, oldPasswordMD5, passwordMD5);
+        LocalDateTime updateTime = LocalDateTime.now();
+        int rows = employeeMapper.editPassword(id, oldPasswordMD5, passwordMD5, updateTime);
+        return rows > 0;
     }
 
     @Override
@@ -106,6 +106,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void startOrStop(Integer status, Long id) {
         // 设置update时间
         employeeMapper.updateStatus(status, id, LocalDateTime.now(), BaseContext.getCurrentId());
+    }
+
+    @Override
+    public Employee getById(Long id) {
+        return employeeMapper.getById(id);
     }
 
 }

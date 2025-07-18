@@ -16,11 +16,13 @@ public interface EmployeeService {
      */
     Employee login(EmployeeLoginDTO employeeLoginDTO);
 
-    void editPassword(Map<String, Object> map);
+    boolean editPassword(Map<String, Object> map);
 
     PageResult page(Integer page, Integer pageSize, String name);
 
     void save(Employee employee);
 
     void startOrStop(Integer status, Long id);
+
+    Employee getById(Long id);
 }

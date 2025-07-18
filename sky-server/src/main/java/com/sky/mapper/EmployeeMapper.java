@@ -20,8 +20,9 @@ public interface EmployeeMapper {
     @Select("select * from employee where username = #{username}")
     Employee getByUsername(String username);
 
-    @Update("update employee set password = #{newPassword} where id = #{id} and password = #{oldPassword}")
-    void editPassword(Integer id, String oldPassword, String newPassword);
+    @Update("update employee set password = #{newPassword}, update_time = #{updateTime} " +
+            "where id = #{id} and password = #{oldPassword}")
+    int editPassword(Integer id, String oldPassword, String newPassword, LocalDateTime updateTime);
 
 //    @Select("select * from employee where name like concat('%',#{name},'%')")
     List<Employee> page(String name);
@@ -31,4 +32,7 @@ public interface EmployeeMapper {
     @Update("update employee set status = #{status}, update_time = #{now}, update_user = #{currentId}  " +
             "where id = #{id}")
     void updateStatus(Integer status, Long id, LocalDateTime now, Long currentId);
+
+    @Select("select * from employee where id = #{id}")
+    Employee getById(Long id);
 }

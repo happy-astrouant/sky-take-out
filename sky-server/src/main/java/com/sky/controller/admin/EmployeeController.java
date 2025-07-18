@@ -80,8 +80,12 @@ public class EmployeeController {
     @PutMapping("/editPassword")
     public Result<String> editPassword(@RequestBody Map<String, Object> map) {
         log.info("员工修改密码：{}", map);
-        employeeService.editPassword(map);
-        return Result.success();
+        boolean success = employeeService.editPassword(map);
+        if(success){
+            return Result.success("修改密码成功");
+        } else {
+            return Result.error("修改密码失败");
+        }
     }
 
     /**
@@ -116,5 +120,15 @@ public class EmployeeController {
         log.info("员工账号启动/禁用：{}", id);
         employeeService.startOrStop(status, id);
         return Result.success();
+    }
+
+    /**
+     * 根据ID查询员工
+     * */
+    @GetMapping("/{id}")
+    public Result<Employee> getById(@PathVariable Long id) {
+        log.info("根据id查询员工：{}", id);
+        Employee employee = employeeService.getById(id);
+        return Result.success(employee);
     }
 }
