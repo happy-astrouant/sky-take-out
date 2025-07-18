@@ -20,7 +20,7 @@ public interface EmployeeMapper {
     @Select("select * from employee where username = #{username}")
     Employee getByUsername(String username);
 
-    @Update("update employee set password = #{newPassword}, update_time = #{updateTime} " +
+    @Update("update employee set password = #{newPassword}, update_time = #{updateTime}, update_user = #{id} " +
             "where id = #{id} and password = #{oldPassword}")
     int editPassword(Integer id, String oldPassword, String newPassword, LocalDateTime updateTime);
 
@@ -35,4 +35,6 @@ public interface EmployeeMapper {
 
     @Select("select * from employee where id = #{id}")
     Employee getById(Long id);
+
+    void update(Employee employee);
 }

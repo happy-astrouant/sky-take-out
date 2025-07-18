@@ -131,4 +131,14 @@ public class EmployeeController {
         Employee employee = employeeService.getById(id);
         return Result.success(employee);
     }
+
+    /**
+     * 编辑员工信息
+     */
+    @PutMapping
+    public Result update(@RequestBody Employee employee) {
+        log.info("编辑员工信息：{}", employee);
+        employeeService.update(employee);
+        return Result.success();
+    }
 }
