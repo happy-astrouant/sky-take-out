@@ -5,7 +5,7 @@ import com.sky.dto.DishDTO;
 public interface DishService {
     void update(DishDTO dishDTO);
 
-    boolean delete(Long[] ids);
+    int delete(Long[] ids);
 
     void save(DishDTO dishDTO);
 }

@@ -22,7 +22,7 @@
 
     <delete id="deleteByIds">
         delete from dish where id in
-         <foreach collection="array" open="(" close=")" item="dishId" separator=",">
+         <foreach collection="ids" open="(" close=")" item="dishId" separator=",">
             #{dishId}
         </foreach>
     </delete>
@@ -34,4 +34,18 @@
              create_time, update_time, create_user, update_user)
         values (#{name}, #{categoryId}, #{price}, #{image}, #{description}, #{status}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
     </insert>
+
+    <select id="countEnableDishByIds">
+        select count(1) from dish where status = 1 and id in
+        <foreach item="dishId" collection="ids" open="(" close=")" separator=",">
+            #{dishId}
+        </foreach>
+    </select>
+
+    <select id="countSetmealByDishIds">
+        select count(1) from setmeal_dish where dish_id in
+        <foreach item="dishId" collection="ids" open="(" close=")" separator=",">
+            #{dishId}
+        </foreach>
+    </select>
 </mapper>

@@ -21,4 +21,9 @@ public interface DishMapper {
 
     @AutoFill(value = OperationType.INSERT)
     void save(Dish dish);
+
+
+    int countEnableDishByIds(Long[] ids);
+
+    int countSetmealByDishIds(Long[] ids);
 }

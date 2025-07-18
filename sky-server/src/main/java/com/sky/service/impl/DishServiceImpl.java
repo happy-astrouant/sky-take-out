@@ -42,15 +42,19 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public boolean delete(Long[] ids) {
-        // 检查订单中是否有该菜品
-        if(orderMapper.countByDishIds(ids) > 0){
-            return false;
+    public int delete(Long[] ids) {
+        // 已经起售的菜品禁止删除
+        if(dishMapper.countEnableDishByIds(ids) > 0){
+            return 1;
+        }
+        // 检查套餐中是否有该菜品
+        if(dishMapper.countSetmealByDishIds(ids) > 0){
+            return 2;
         }
         // 删除关联的口味数据
         dishFlavorMapper.deleteByDishIds(ids);
         dishMapper.deleteByIds(ids);
-        return true;
+        return 0;
     }
 
     @Override

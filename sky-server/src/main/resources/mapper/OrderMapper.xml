@@ -4,7 +4,7 @@
 <mapper namespace="com.sky.mapper.OrderMapper">
     <select id="countByDishIds">
         select count(1) from order_detail where dish_id in
-        <foreach item="dishId" collection="array" separator="," open="(" close=")" index="">
+        <foreach item="dishId" collection="ids" separator="," open="(" close=")" index="">
             #{dishId}
         </foreach>
     </select>
