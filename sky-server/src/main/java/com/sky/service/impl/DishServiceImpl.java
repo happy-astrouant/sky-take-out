@@ -2,10 +2,12 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.sky.constant.MessageConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.OrderMapper;
@@ -51,24 +53,23 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public int delete(Long[] ids) {
+    public void delete(Long[] ids) {
         // 已经起售的菜品禁止删除
         if(dishMapper.countEnableDishByIds(ids) > 0){
-            return 1;
+            throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
         }
         // 检查套餐中是否有该菜品
         if(dishMapper.countSetmealByDishIds(ids) > 0){
-            return 2;
+            throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
         }
         // 删除关联的口味数据
         dishFlavorMapper.deleteByDishIds(ids);
         dishMapper.deleteByIds(ids);
-        return 0;
     }
 
     @Override
     public void save(DishDTO dishDTO) {
-        // TODO: 文件上传
+
         Dish dish = new Dish();
         BeanUtils.copyProperties(dishDTO, dish);
         dishMapper.save(dish);

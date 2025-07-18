@@ -5,6 +5,7 @@ import com.sky.constant.MessageConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.DishService;
@@ -34,11 +35,11 @@ public class DishController {
     @DeleteMapping
     public Result delete(Long[] ids) {
         // 需要检查订单中是否关联该菜品
-        int res = dishService.delete(ids);
-        if(res == 1)
-            return Result.error(MessageConstant.DISH_ON_SALE);
-        if(res == 2)
-            return Result.error(MessageConstant.SETMEAL_ON_SALE);
+        try{
+            dishService.delete(ids);
+        } catch (DeletionNotAllowedException e){
+            return Result.error(e.getMessage());
+        }
         return Result.success();
     }
 

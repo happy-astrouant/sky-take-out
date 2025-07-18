@@ -13,6 +13,7 @@ import java.util.List;
 @Mapper
 public interface SetmealMapper {
 
+    @AutoFill(value = OperationType.UPDATE)
     void update(Setmeal setmeal);
 
     @AutoFill(value = OperationType.UPDATE)
@@ -39,15 +40,19 @@ public interface SetmealMapper {
             "and d.status = 0")
     int countDishBySetmealId(Long id);
 
-    @Delete("delete from setmeal where id in (#{id})")
     void delete(List<Long> ids);
 
-    @Delete("delete from setmeal_dish where setmeal_id in (#{id})")
     void deleteDishBySetmealId(List<Long> ids);
 
     @Select("select count(1) from setmeal where name = #{name}")
     int countByName(@Param("name") String name);
 
-    @Select("select count(1) from setmeal where status = 1 and id in (#{id})")
+
     int countStatusById(List<Long> ids);
+
+    @Select("select * from setmeal where id = #{id}")
+    Setmeal getById(Long id);
+
+    @Select("select * from setmeal_dish where setmeal_id = #{id}")
+    List<SetmealDish> getSetmealDishBySetmealId(Long id);
 }

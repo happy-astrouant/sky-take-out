@@ -14,6 +14,7 @@ import com.sky.exception.SetmealEnableFailedException;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.SetmealService;
+import com.sky.vo.SetmealVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class SetmealServiceImpl implements SetmealService {
     private SetmealMapper setmealMapper;
 
     @Override
+    @Transactional
     public void update(SetmealDTO setmealDTO) {
         Setmeal setmeal = new Setmeal();
         BeanUtils.copyProperties(setmealDTO, setmeal);
@@ -77,6 +79,7 @@ public class SetmealServiceImpl implements SetmealService {
     }
 
     @Override
+    @Transactional
     public void updateStatus(Integer status, Long id) throws SetmealEnableFailedException {
         // 需要检查是否包含未起售的菜品
         int count = setmealMapper.countDishBySetmealId(id);
@@ -89,11 +92,24 @@ public class SetmealServiceImpl implements SetmealService {
     }
 
     @Override
+    @Transactional
     public void delete(List<Long> ids) {
         // 检查有无起售
         int count = setmealMapper.countStatusById(ids);
         if(count > 0) throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
         setmealMapper.delete(ids);
         setmealMapper.deleteDishBySetmealId(ids);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public SetmealVO getByIdWithDish(Long id) {
+        // 先获取菜品
+        Setmeal setmeal = setmealMapper.getById(id);
+        List<SetmealDish> setmealDishes = setmealMapper.getSetmealDishBySetmealId(id);
+        SetmealVO setmealVO = new SetmealVO();
+        BeanUtils.copyProperties(setmeal, setmealVO);
+        setmealVO.setSetmealDishes(setmealDishes);
+        return setmealVO;
     }
 }

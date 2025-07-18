@@ -49,15 +49,22 @@
            #{image}, #{description})
     </insert>
 
+    <delete id="delete">
+        delete from setmeal where id in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+    </delete>
+
     <delete id="deleteDishBySetmealId">
         delete from setmeal_dish where setmeal_id in
-             <foreach collection="list" item="id" separator="," open="(" close=")">
+             <foreach collection="ids" item="id" separator="," open="(" close=")">
                  #{id}
              </foreach>
     </delete>
 
     <select id="countStatusById">
-        select count(1) from setmeal where status = #{status} and id in
+        select count(1) from setmeal where status = 1 and id in
             <foreach collection="ids" item="id" open="(" close=")" separator=",">
                 #{id}
             </foreach>

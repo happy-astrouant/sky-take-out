@@ -11,7 +11,7 @@ import java.util.List;
 public interface DishService {
     void update(DishDTO dishDTO);
 
-    int delete(Long[] ids);
+    void delete(Long[] ids);
 
     void save(DishDTO dishDTO);
 

@@ -8,6 +8,7 @@ import com.sky.exception.SetmealEnableFailedException;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.SetmealService;
+import com.sky.vo.SetmealVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class SetmealController {
     * 修改套餐信息
     * */
     @PutMapping
-    public Result update(SetmealDTO setmealDTO) {
+    public Result update(@RequestBody SetmealDTO setmealDTO) {
         log.info("套餐-更新内容：{}", setmealDTO);
         setmealService.update(setmealDTO);
         return Result.success();
@@ -65,7 +66,8 @@ public class SetmealController {
     }
 
     /**批量删除套餐*/
-    public Result delete(@RequestBody List<Long> ids) {
+    @DeleteMapping
+    public Result delete(@RequestParam List<Long> ids) {
         log.info("批量删除套餐：{}", ids);
         try {
             setmealService.delete(ids);
@@ -73,6 +75,14 @@ public class SetmealController {
             return Result.error(e.getMessage());
         }
         return Result.success();
+    }
+
+    /**根据ID查询套餐详细信息（含菜品）*/
+    @GetMapping("/{id}")
+    public Result<SetmealVO> getById(@PathVariable Long id) {
+        log.info("根据ID查询套餐详细信息：{}", id);
+        SetmealVO setmealVO = setmealService.getByIdWithDish(id);
+        return Result.success(setmealVO);
     }
 
 }
