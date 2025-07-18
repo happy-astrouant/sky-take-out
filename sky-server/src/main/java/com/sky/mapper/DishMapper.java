@@ -17,7 +17,7 @@ public interface DishMapper {
     Integer countByCategoryId(Long categoryId);
 
     @AutoFill(value = OperationType.UPDATE)
-    void update(DishDTO dishDTO);
+    void update(Dish dish);
 
     void deleteByIds(Long[] ids);
 
@@ -33,4 +33,7 @@ public interface DishMapper {
 
     @Select("select * from dish where id = #{id}")
     Dish getById(Long id);
+
+    @Select("select * from dish where category_id = #{categoryId}")
+    List<Dish> listByCategoryId(Integer categoryId);
 }

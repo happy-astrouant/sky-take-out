@@ -3,20 +3,23 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sky.mapper.DishMapper">
     <update id="update">
-        update dish set
-            name = #{name},
-            category_id = #{categoryId},
-            price = #{price},
-            image = #{image},
+        update dish
+            <set>
+                name = #{name},
+                category_id = #{categoryId},
+                price = #{price},
+                image = #{image},
 
-            <if test="description != null">
-                description = #{description},
-            </if>
-            <if test="status != null">
-            status = #{status},
-            </if>
-            update_time = #{updateTime},
-            update_user = #{updateUser},
+                <if test="description != null">
+                    description = #{description},
+                </if>
+                <if test="status != null">
+                    status = #{status},
+                </if>
+                update_time = #{updateTime},
+                update_user = #{updateUser}
+            </set>
+
         where id = #{id}
     </update>
 

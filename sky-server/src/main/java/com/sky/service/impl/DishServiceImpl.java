@@ -35,15 +35,19 @@ public class DishServiceImpl implements DishService {
     @Transactional
     public void update(DishDTO dishDTO) {
         // 需要同步更新dish_flavor表
-        dishMapper.update(dishDTO);
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishDTO, dish);
+        dishMapper.update(dish);
 
         // 先删除旧数据
         dishFlavorMapper.deleteByDishId(dishDTO.getId());
 
         // 写入新数据
         List<DishFlavor> list = dishDTO.getFlavors();
-        if(list != null && !list.isEmpty())
+        if(list != null && !list.isEmpty()){
+            list.forEach(dishFlavor -> dishFlavor.setDishId(dishDTO.getId()));
             dishFlavorMapper.batchInsert(dishDTO.getFlavors());
+        }
     }
 
     @Override
@@ -95,5 +99,10 @@ public class DishServiceImpl implements DishService {
         List<DishFlavor> flavors = dishFlavorMapper.list(id);
         dishVO.setFlavors(flavors);
         return dishVO;
+    }
+
+    @Override
+    public List<Dish> list(Integer categoryId) {
+        return dishMapper.listByCategoryId(categoryId);
     }
 }
