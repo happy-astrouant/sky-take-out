@@ -22,6 +22,8 @@ public interface EmployeeMapper {
     @Update("update employee set password = #{newPassword} where id = #{id} and password = #{oldPassword}")
     void editPassword(Integer id, String oldPassword, String newPassword);
 
-    @Select("select * from employee where name like concat('%',#{name},'%')")
+//    @Select("select * from employee where name like concat('%',#{name},'%')")
     List<Employee> page(String name);
+
+    void save(Employee employee);
 }

@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
@@ -12,6 +13,7 @@ import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
+import com.sky.utils.MD5Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,6 +85,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         pageResult.setRecords(records);
         pageResult.setTotal(records.size());
         return pageResult;
+    }
+
+    @Override
+    public void save(Employee employee) {
+        employee.setCreateTime(LocalDateTime.now());
+        employee.setUpdateTime(LocalDateTime.now());
+
+        employee.setPassword(MD5Utils.md5(employee.getPassword()));
+        employeeMapper.save(employee);
     }
 
 }

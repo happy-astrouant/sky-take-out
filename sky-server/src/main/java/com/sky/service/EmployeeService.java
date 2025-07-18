@@ -19,4 +19,6 @@ public interface EmployeeService {
     void editPassword(Map<String, Object> map);
 
     PageResult page(Integer page, Integer pageSize, String name);
+
+    void save(Employee employee);
 }
