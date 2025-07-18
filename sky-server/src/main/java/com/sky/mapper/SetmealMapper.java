@@ -34,4 +34,8 @@ public interface SetmealMapper {
     @AutoFill(value = OperationType.UPDATE)
     @Update("update setmeal set status=#{status}, update_user=#{updateUser}, update_time=#{updateTime} where id = #{id}")
     void updateStatus(Setmeal setmeal);
+
+    @Select("select count(1) from setmeal_dish s left join dish d on s.dish_id = d.id where setmeal_id = #{id} " +
+            "and d.status = 0")
+    int countDishBySetmealId(Long id);
 }

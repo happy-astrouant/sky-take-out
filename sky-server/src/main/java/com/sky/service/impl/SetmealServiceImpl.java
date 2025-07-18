@@ -2,11 +2,13 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
+import com.sky.exception.SetmealEnableFailedException;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.SetmealService;
@@ -70,10 +72,19 @@ public class SetmealServiceImpl implements SetmealService {
     }
 
     @Override
-    public void updateStatus(Integer status, Long id) {
+    public void updateStatus(Integer status, Long id) throws SetmealEnableFailedException {
+        // 需要检查是否包含未起售的菜品
+        int count = setmealMapper.countDishBySetmealId(id);
+        // 包含未启售菜品且尝试起售
+        if(count>0 && status == 1) throw new SetmealEnableFailedException(MessageConstant.SETMEAL_ENABLE_FAILED);
         Setmeal setmeal = new Setmeal();
         setmeal.setStatus(status);
         setmeal.setId(id);
         setmealMapper.updateStatus(setmeal);
+    }
+
+    @Override
+    public void delete(List<Long> ids) {
+        //
     }
 }

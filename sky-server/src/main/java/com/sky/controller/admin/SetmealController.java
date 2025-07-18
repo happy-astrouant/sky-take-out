@@ -1,14 +1,18 @@
 package com.sky.controller.admin;
 
 
+import com.sky.constant.MessageConstant;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
+import com.sky.exception.SetmealEnableFailedException;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.SetmealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -48,9 +52,19 @@ public class SetmealController {
     @PostMapping("/status/{status}")
     public Result updateStatus(@PathVariable Integer status, Long id) {
         log.info("套餐-{} 起售或停售：{}", id, status);
-        setmealService.updateStatus(status, id);
+        try{
+            setmealService.updateStatus(status, id);
+        } catch(SetmealEnableFailedException e){
+            return Result.error(e.getMessage());
+        }
         return Result.success();
     }
 
+    /**批量删除套餐*/
+    public Result delete(@RequestBody List<Long> ids) {
+        log.info("批量删除套餐：{}", ids);
+        setmealService.delete(ids);
+        return Result.success();
+    }
 
 }
