@@ -13,4 +13,15 @@
         update_user = #{updateUser}
         where id = #{id}
     </update>
+
+    <insert id="insertSetmealDish">
+        insert into setmeal_dish (setmeal_id, dish_id, name, price, copies) values
+        <foreach collection="setmealDishes" item="setmealDish" separator=",">
+            (#{setmealId},
+             #{dishId},
+             #{name},
+             #{price},
+             #{copies})
+        </foreach>
+    </insert>
 </mapper>
