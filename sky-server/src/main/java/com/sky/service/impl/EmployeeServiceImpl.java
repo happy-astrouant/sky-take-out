@@ -92,8 +92,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         // 设置创建和修改时间
         employee.setCreateTime(LocalDateTime.now());
         employee.setUpdateTime(LocalDateTime.now());
-        // 加密密码
-        employee.setPassword(MD5Utils.md5(employee.getPassword()));
+        // 设置默认密码
+        employee.setPassword(MD5Utils.md5("123456"));
         // 设置创建人和修改人
         employee.setCreateUser(BaseContext.getCurrentId());
         employee.setUpdateUser(BaseContext.getCurrentId());
