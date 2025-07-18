@@ -67,7 +67,11 @@ public class SetmealController {
     /**批量删除套餐*/
     public Result delete(@RequestBody List<Long> ids) {
         log.info("批量删除套餐：{}", ids);
-        setmealService.delete(ids);
+        try {
+            setmealService.delete(ids);
+        } catch (SetmealEnableFailedException e){
+            return Result.error(e.getMessage());
+        }
         return Result.success();
     }
 

@@ -9,6 +9,7 @@ import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
 import com.sky.exception.CreateFailedException;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.exception.SetmealEnableFailedException;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
@@ -89,6 +90,9 @@ public class SetmealServiceImpl implements SetmealService {
 
     @Override
     public void delete(List<Long> ids) {
+        // 检查有无起售
+        int count = setmealMapper.countStatusById(ids);
+        if(count > 0) throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
         setmealMapper.delete(ids);
         setmealMapper.deleteDishBySetmealId(ids);
     }

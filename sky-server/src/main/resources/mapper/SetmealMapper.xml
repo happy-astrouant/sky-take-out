@@ -55,4 +55,11 @@
                  #{id}
              </foreach>
     </delete>
+
+    <select id="countStatusById">
+        select count(1) from setmeal where status = #{status} and id in
+            <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+    </select>
 </mapper>

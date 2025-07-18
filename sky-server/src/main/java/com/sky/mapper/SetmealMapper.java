@@ -47,4 +47,7 @@ public interface SetmealMapper {
 
     @Select("select count(1) from setmeal where name = #{name}")
     int countByName(@Param("name") String name);
+
+    @Select("select count(1) from setmeal where status = 1 and id in (#{id})")
+    int countStatusById(List<Long> ids);
 }
