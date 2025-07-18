@@ -42,7 +42,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void startOrStop(Integer status, Long id) {
-        categoryMapper.updateStatus(status, id, LocalDateTime.now(), BaseContext.getCurrentId());
+        Category category = new Category();
+        category.setStatus(status);
+        category.setId(id);
+        categoryMapper.updateStatus(category);
     }
 
     @Override
@@ -62,6 +65,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<Category> list(Integer type) {
         return categoryMapper.list(type);
+    }
+
+    @Override
+    public boolean existByName(String name) {
+        return categoryMapper.countByName(name) > 0;
     }
 
 
