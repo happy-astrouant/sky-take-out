@@ -37,4 +37,6 @@ public interface EmployeeMapper {
     Employee getById(Long id);
 
     void update(Employee employee);
+
+    int count(String name);
 }

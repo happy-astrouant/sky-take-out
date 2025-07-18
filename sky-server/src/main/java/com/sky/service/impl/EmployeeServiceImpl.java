@@ -17,6 +17,7 @@ import com.sky.service.EmployeeService;
 import com.sky.utils.MD5Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import java.util.Map;
@@ -33,6 +34,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param employeeLoginDTO
      * @return
      */
+    @Override
     public Employee login(EmployeeLoginDTO employeeLoginDTO) {
         String username = employeeLoginDTO.getUsername();
         String password = employeeLoginDTO.getPassword();
@@ -76,14 +78,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public PageResult page(Integer page,
                            Integer pageSize,
                            String name) {
+        int num = employeeMapper.count(name);
         PageHelper.startPage(page, pageSize);
         PageResult pageResult = new PageResult();
         List<Employee> records = employeeMapper.page(name);
         pageResult.setRecords(records);
-        pageResult.setTotal(records.size());
+        pageResult.setTotal(num);
         return pageResult;
     }
 
