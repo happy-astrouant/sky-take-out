@@ -79,4 +79,14 @@ public class DishController {
         List<Dish> list = dishService.list(categoryId);
         return Result.success(list);
     }
+
+    /**
+     * 起售/停售
+     */
+    @PostMapping("/status/{status}")
+    public Result updateStatus(@PathVariable Integer status, Long id) {
+        dishService.updateStatus(status, id);
+        return Result.success();
+    }
+
 }
