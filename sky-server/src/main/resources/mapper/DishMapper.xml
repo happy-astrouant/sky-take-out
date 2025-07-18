@@ -19,4 +19,11 @@
             update_user = #{updateUser},
         where id = #{id}
     </update>
+
+    <delete id="deleteByIds">
+        delete from dish where id in
+         <foreach collection="array" open="(" close=")" item="dishId" separator=",">
+            #{dishId}
+        </foreach>
+    </delete>
 </mapper>

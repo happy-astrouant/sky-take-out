@@ -12,4 +12,6 @@ public interface DishMapper {
     Integer countByCategoryId(Long categoryId);
 
     void update(DishDTO dishDTO);
+
+    void deleteByIds(Long[] ids);
 }

@@ -4,6 +4,7 @@ import com.sky.dto.DishDTO;
 import com.sky.entity.DishFlavor;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
+import com.sky.mapper.OrderMapper;
 import com.sky.service.DishService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,9 @@ public class DishServiceImpl implements DishService {
     @Autowired
     private DishFlavorMapper dishFlavorMapper;
 
+    @Autowired
+    private OrderMapper orderMapper;
+
     @Override
     @Transactional
     public void update(DishDTO dishDTO) {
@@ -33,5 +37,17 @@ public class DishServiceImpl implements DishService {
         List<DishFlavor> list = dishDTO.getFlavors();
         if(list != null && !list.isEmpty())
             dishFlavorMapper.batchInsert(dishDTO.getFlavors());
+    }
+
+    @Override
+    public boolean delete(Long[] ids) {
+        // 检查订单中是否有该菜品
+        if(orderMapper.countByDishIds(ids) > 0){
+            return false;
+        }
+        // 删除关联的口味数据
+        dishFlavorMapper.deleteByDishIds(ids);
+        dishMapper.deleteByIds(ids);
+        return true;
     }
 }
