@@ -51,4 +51,4 @@ sky:
     access-key-id: LTAI5t6asCvRHARMqNMybDD1
     access-key-secret: ${ALIYUN_ACCESS_KEY_SECRET}
     endpoint: oss-cn-beijing.aliyuncs.com
-    bucket-name: sky-take-out-images
+    bucket-name: java-web-xzy

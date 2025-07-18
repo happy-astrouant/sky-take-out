@@ -20,6 +20,7 @@ public class CommonController {
 
     @RequestMapping("/upload")
     public Result upload(MultipartFile file){
+        String path = "";
         AliOssUtil ossUtil = new AliOssUtil(
                 aliOssProperties.getEndpoint(),
                 aliOssProperties.getAccessKeyId(),
@@ -31,10 +32,10 @@ public class CommonController {
             // 保留后缀
             String originalFilename = file.getOriginalFilename();
             String fileType = originalFilename.substring(originalFilename.lastIndexOf("."));
-            ossUtil.upload(file.getBytes(), fileName + fileType);
+            path = ossUtil.upload(file.getBytes(), fileName + fileType);
         } catch (Exception e){
             return Result.error(MessageConstant.UPLOAD_FAILED);
         }
-        return Result.success();
+        return Result.success(path);
     }
 }
