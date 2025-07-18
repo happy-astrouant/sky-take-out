@@ -1,6 +1,8 @@
 package com.sky.service.impl;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.sky.context.BaseContext;
 import com.sky.entity.Category;
 import com.sky.mapper.CategoryMapper;
@@ -20,15 +22,14 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryMapper categoryMapper;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public PageResult page(Integer page, Integer pageSize, String name, Integer type) {
-        int num = categoryMapper.count(name, type);
-
-        PageHelper.startPage(page, pageSize);
         PageResult pageResult = new PageResult();
+        PageHelper.startPage(page, pageSize);
         List<Category> categoryList = categoryMapper.page(name, type);
-        pageResult.setTotal(num);
-        pageResult.setRecords(categoryList);
+        PageInfo<Category> pageInfo = new PageInfo<>(categoryList);
+        pageResult.setRecords(pageInfo.getList());
+        pageResult.setTotal(pageInfo.getTotal());
         return pageResult;
     }
 
@@ -42,6 +43,15 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void startOrStop(Integer status, Long id) {
         categoryMapper.updateStatus(status, id, LocalDateTime.now(), BaseContext.getCurrentId());
+    }
+
+    @Override
+    public void save(Category category) {
+        category.setCreateTime(LocalDateTime.now());
+        category.setUpdateTime(LocalDateTime.now());
+        category.setCreateUser(BaseContext.getCurrentId());
+        category.setUpdateUser(BaseContext.getCurrentId());
+        categoryMapper.save(category);
     }
 
 

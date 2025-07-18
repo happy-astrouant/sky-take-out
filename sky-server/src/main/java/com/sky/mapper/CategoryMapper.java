@@ -27,4 +27,6 @@ public interface CategoryMapper {
     @Update("update category set status = #{status}, " +
             "update_time = #{updateTime}, update_user = #{updateUser} where id = #{id}")
     void updateStatus(Integer status, Long id, LocalDateTime updateTime, Long updateUser);
+
+    void save(Category category);
 }

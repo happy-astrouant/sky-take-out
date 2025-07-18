@@ -3,6 +3,7 @@ package com.sky.service.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.context.BaseContext;
@@ -78,16 +79,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public PageResult page(Integer page,
                            Integer pageSize,
                            String name) {
-        int num = employeeMapper.count(name);
         PageHelper.startPage(page, pageSize);
         PageResult pageResult = new PageResult();
         List<Employee> records = employeeMapper.page(name);
-        pageResult.setRecords(records);
-        pageResult.setTotal(num);
+        PageInfo<Employee> pageInfo = new PageInfo<>(records);
+        pageResult.setRecords(pageInfo.getList());
+        pageResult.setTotal(pageInfo.getTotal());
         return pageResult;
     }
 

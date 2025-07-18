@@ -51,4 +51,11 @@ public class CategoryController {
         categoryService.startOrStop(status, id);
         return Result.success();
     }
+
+    @PostMapping
+    public Result save(@RequestBody Category category) {
+        log.info("新增分类：{}", category);
+        categoryService.save(category);
+        return Result.success();
+    }
 }
