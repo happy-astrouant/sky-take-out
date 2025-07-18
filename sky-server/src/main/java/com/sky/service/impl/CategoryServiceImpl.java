@@ -59,5 +59,10 @@ public class CategoryServiceImpl implements CategoryService {
         categoryMapper.delete(id);
     }
 
+    @Override
+    public List<Category> list(Integer type) {
+        return categoryMapper.list(type);
+    }
+
 
 }
