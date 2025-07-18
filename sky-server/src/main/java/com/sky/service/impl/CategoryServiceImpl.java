@@ -6,6 +6,8 @@ import com.github.pagehelper.PageInfo;
 import com.sky.context.BaseContext;
 import com.sky.entity.Category;
 import com.sky.mapper.CategoryMapper;
+import com.sky.mapper.DishMapper;
+import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
     private CategoryMapper categoryMapper;
+
+    @Autowired
+    private SetmealMapper setmealMapper;
+
+    @Autowired
+    private DishMapper dishMapper;
+
+
 
     @Override
     @Transactional(readOnly = true)
@@ -59,8 +69,22 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void delete(Long id) {
+    public boolean delete(Long id) {
+        // 先查询出该分类的类型
+        Integer type = categoryMapper.getTypeById(id);
+        // 如果分类是菜品，需要去菜品数据库中检查是否存在关联
+        if(type == 1){
+            if(dishMapper.countByCategoryId(id) > 0){
+                return false;
+            }
+        } else if(type == 2){
+            if(setmealMapper.countByCategoryId(id) > 0){
+                return false;
+            }
+        }
+
         categoryMapper.delete(id);
+        return true;
     }
 
     @Override

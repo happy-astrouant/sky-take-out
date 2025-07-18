@@ -73,7 +73,9 @@ public class CategoryController {
     @DeleteMapping
     public Result delete(@RequestParam Long id) {
         log.info("删除分类：{}", id);
-        categoryService.delete(id);
+        boolean res = categoryService.delete(id);
+        if(!res)
+            return Result.error("删除分类失败，该分类下存在关联数据");
         return Result.success();
     }
 

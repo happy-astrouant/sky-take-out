@@ -13,6 +13,8 @@ import java.util.List;
 @Mapper
 public interface CategoryMapper {
 
+    @Select("select type from category where id = #{id}")
+    Integer getTypeById(Long id);
 
     List<Category> page(String name, Integer type);
 
