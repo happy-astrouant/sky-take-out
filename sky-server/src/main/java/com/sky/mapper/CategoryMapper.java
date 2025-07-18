@@ -3,10 +3,7 @@ package com.sky.mapper;
 
 import com.sky.entity.Category;
 import com.sky.result.PageResult;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.SelectKey;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,4 +26,7 @@ public interface CategoryMapper {
     void updateStatus(Integer status, Long id, LocalDateTime updateTime, Long updateUser);
 
     void save(Category category);
+
+    @Delete("delete from category where id = #{id}")
+    void delete(Long id);
 }

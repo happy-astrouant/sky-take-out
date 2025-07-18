@@ -54,5 +54,10 @@ public class CategoryServiceImpl implements CategoryService {
         categoryMapper.save(category);
     }
 
+    @Override
+    public void delete(Long id) {
+        categoryMapper.delete(id);
+    }
+
 
 }

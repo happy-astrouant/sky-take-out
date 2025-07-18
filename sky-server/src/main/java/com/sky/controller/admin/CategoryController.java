@@ -52,10 +52,23 @@ public class CategoryController {
         return Result.success();
     }
 
+    /**
+     * 新增分类
+     */
     @PostMapping
     public Result save(@RequestBody Category category) {
         log.info("新增分类：{}", category);
         categoryService.save(category);
+        return Result.success();
+    }
+
+    /**
+     * 根据id删除分类
+     */
+    @DeleteMapping
+    public Result delete(@RequestParam Long id) {
+        log.info("删除分类：{}", id);
+        categoryService.delete(id);
         return Result.success();
     }
 }
