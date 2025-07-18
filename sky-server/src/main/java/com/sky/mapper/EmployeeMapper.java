@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.List;
+
 @Mapper
 public interface EmployeeMapper {
 
@@ -19,4 +21,7 @@ public interface EmployeeMapper {
 
     @Update("update employee set password = #{newPassword} where id = #{id} and password = #{oldPassword}")
     void editPassword(Integer id, String oldPassword, String newPassword);
+
+    @Select("select * from employee where name like concat('%',#{name},'%')")
+    List<Employee> page(String name);
 }

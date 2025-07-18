@@ -1,5 +1,7 @@
 package com.sky.service.impl;
 
+import java.util.List;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.dto.EmployeeLoginDTO;
@@ -8,10 +10,13 @@ import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
+import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 
@@ -66,6 +71,18 @@ public class EmployeeServiceImpl implements EmployeeService {
         String passwordMD5 = DigestUtils.md5DigestAsHex(password.getBytes());
         String oldPasswordMD5 = DigestUtils.md5DigestAsHex(oldPassword.getBytes());
         employeeMapper.editPassword(id, oldPasswordMD5, passwordMD5);
+    }
+
+    @Override
+    public PageResult page(Integer page,
+                           Integer pageSize,
+                           String name) {
+        PageHelper.startPage(page, pageSize);
+        PageResult pageResult = new PageResult();
+        List<Employee> records = employeeMapper.page(name);
+        pageResult.setRecords(records);
+        pageResult.setTotal(records.size());
+        return pageResult;
     }
 
 }

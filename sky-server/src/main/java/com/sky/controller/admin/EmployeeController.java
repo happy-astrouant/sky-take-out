@@ -4,6 +4,7 @@ import com.sky.constant.JwtClaimsConstant;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.entity.Employee;
 import com.sky.properties.JwtProperties;
+import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.EmployeeService;
 import com.sky.utils.JwtUtil;
@@ -78,6 +79,20 @@ public class EmployeeController {
         log.info("员工修改密码：{}", map);
         employeeService.editPassword(map);
         return Result.success();
+    }
+
+    /**
+     * 分页查询员工信息
+     */
+    @GetMapping("/page")
+    public Result<PageResult> page(
+            @RequestParam Integer page,
+            @RequestParam Integer pageSize,
+            @RequestParam(defaultValue = "") String name
+    ) {
+        log.info("分页查询员工信息，页码{}，页大小{}，员工姓名{}", page, pageSize, name);
+        PageResult pageResult = employeeService.page(page, pageSize, name);
+        return Result.success(pageResult);
     }
 
 }
