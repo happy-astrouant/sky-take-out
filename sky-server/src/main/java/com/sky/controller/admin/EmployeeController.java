@@ -80,12 +80,8 @@ public class EmployeeController {
     @PutMapping("/editPassword")
     public Result<String> editPassword(@RequestBody Map<String, Object> map) {
         log.info("员工修改密码：{}", map);
-        boolean success = employeeService.editPassword(map);
-        if(success){
-            return Result.success("修改密码成功");
-        } else {
-            return Result.error("修改密码失败");
-        }
+        employeeService.editPassword(map);
+        return Result.success();
     }
 
     /**

@@ -68,7 +68,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public boolean editPassword(Map<String,  Object> map) {
+    public void editPassword(Map<String,  Object> map) {
         String oldPassword = (String) map.get("oldPassword");
         Long id = (Long) map.get("empId");
         String password = (String) map.get("newPassword");
@@ -77,7 +77,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = new Employee();
         employee.setPassword(oldPasswordMD5);
         int rows = employeeMapper.editPassword(employee, passwordMD5);
-        return rows > 0;
+        if(rows == 0){
+            throw new PasswordErrorException(MessageConstant.PASSWORD_EDIT_FAILED);
+        }
     }
 
     @Override

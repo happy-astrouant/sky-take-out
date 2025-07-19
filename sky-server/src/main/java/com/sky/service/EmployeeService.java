@@ -16,7 +16,7 @@ public interface EmployeeService {
      */
     Employee login(EmployeeLoginDTO employeeLoginDTO);
 
-    boolean editPassword(Map<String, Object> map);
+    void editPassword(Map<String, Object> map);
 
     PageResult page(Integer page, Integer pageSize, String name);
 
