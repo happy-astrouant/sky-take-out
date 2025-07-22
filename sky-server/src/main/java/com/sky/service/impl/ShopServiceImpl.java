@@ -1,6 +1,7 @@
 package com.sky.service.impl;
 
 import com.sky.exception.BaseException;
+import com.sky.mapper.ShopMapper;
 import com.sky.result.Result;
 import com.sky.service.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,15 @@ public class ShopServiceImpl implements ShopService {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
+    @Autowired
+    private ShopMapper shopMapper;
+
 
     @Override
     public void changeStatus(Integer status) {
         stringRedisTemplate.opsForValue().set(SHOP_STATUS, status.toString());
+        // 更新数据库内容
+        shopMapper.updateStatus(status);
     }
 
     @Override
@@ -28,7 +34,10 @@ public class ShopServiceImpl implements ShopService {
         if (status != null) {
             return Integer.valueOf(status);
         } else {
-            throw new BaseException("店铺状态异常");
+            // 如果不存在，需要查询数据库中的店铺状态，然后设置缓存
+            Integer real_status = shopMapper.getStatus();
+            stringRedisTemplate.opsForValue().set(SHOP_STATUS, real_status.toString());
+            return real_status;
         }
     }
 }
