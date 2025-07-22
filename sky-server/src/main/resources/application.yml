@@ -29,6 +29,12 @@ spring:
       port: ${sky.data.redis.port}
       password: ${sky.data.redis.password}
       database: ${sky.data.redis.database}
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: 1000
 
 mybatis:
   #mapper配置文件
