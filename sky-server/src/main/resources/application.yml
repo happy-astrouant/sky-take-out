@@ -25,10 +25,10 @@ spring:
 
   data:
     redis:
-      host: ${sky.data.redis.host}
-      port: ${sky.data.redis.port}
-      password: ${sky.data.redis.password}
-      database: ${sky.data.redis.database}
+      host: ${sky.redis.host}
+      port: ${sky.redis.port}
+      password: ${sky.redis.password}
+      database: ${sky.redis.database}
       lettuce:
         pool:
           max-active: 8
