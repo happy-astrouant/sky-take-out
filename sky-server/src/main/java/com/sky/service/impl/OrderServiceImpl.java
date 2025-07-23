@@ -69,6 +69,9 @@ public class OrderServiceImpl implements OrderService {
     public OrderStatisticsVO statistics() {
         List<Map<String, Object>> maps =  orderMapper.statistics();
         OrderStatisticsVO orderStatisticsVO = new OrderStatisticsVO();
+        orderStatisticsVO.setConfirmed(0);
+        orderStatisticsVO.setToBeConfirmed(0);
+        orderStatisticsVO.setDeliveryInProgress(0);
         for(Map<String, Object>map: maps){
             switch (map.get("status").toString()){
                 case "2":

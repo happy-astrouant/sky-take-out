@@ -20,4 +20,13 @@ public interface WorkspaceMapper {
 
     // 查询今日营业额度
     Map<String, Object> getTurnover(LocalDateTime startTime, LocalDateTime endTime, List<Integer> statusList);
+
+    @Select("select status, count(*) as count from dish group by status")
+    List<Map<String, Object>> overviewDishes();
+
+    @Select("select status, count(*) as count from setmeal group by status")
+    List<Map<String, Object>> overviewSetmeals();
+
+    @Select("select status, count(*) as count from orders group by status")
+    List<Map<String, Object>> overviewOrders();
 }
