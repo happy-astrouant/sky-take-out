@@ -3,6 +3,7 @@ package com.sky.controller.admin;
 
 import com.sky.dto.OrdersCancelDTO;
 import com.sky.dto.OrdersDTO;
+import com.sky.dto.OrdersRejectionDTO;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderVO;
@@ -34,8 +35,8 @@ public class OrderController {
 
     /*拒绝订单*/
     @PutMapping("/rejection")
-    public Result rejection(@RequestBody OrderVO orderVO) {
-        orderService.rejection(orderVO);
+    public Result rejection(@RequestBody OrdersRejectionDTO ordersRejectionDTO) {
+        orderService.rejection(ordersRejectionDTO);
         return Result.success();
     }
 

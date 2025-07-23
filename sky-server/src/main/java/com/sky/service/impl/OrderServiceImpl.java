@@ -8,6 +8,7 @@ import com.sky.exception.BaseException;
 import com.sky.mapper.OrderMapper;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,5 +56,10 @@ public class OrderServiceImpl implements OrderService {
         order.setId(id);
         order.setStatus(OrderVO.COMPLETED);
         orderMapper.updateOrder(order);
+    }
+
+    @Override
+    public OrderStatisticsVO statistics() {
+        return orderMapper.statistics();
     }
 }

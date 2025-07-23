@@ -2,6 +2,7 @@ package com.sky.mapper;
 
 import com.sky.dto.OrdersCancelDTO;
 import com.sky.entity.Orders;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderVO;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
@@ -14,4 +15,6 @@ public interface OrderMapper {
     OrderVO getById(Long id);
 
     void updateOrder(Orders order);
+
+    OrderStatisticsVO statistics();
 }
