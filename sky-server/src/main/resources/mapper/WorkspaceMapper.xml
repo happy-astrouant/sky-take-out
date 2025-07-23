@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.WorkspaceMapper">
+
+    <select id="getOrderCountByTime">
+        select count(id) from orders
+        <where>
+            order_time >= #{startTime} and #{endTime} > order_time
+            <if test="statusList != null">
+                and status in
+                    <foreach collection="statusList" item="status" separator="," open="(" close=")">
+                        #{status}
+                    </foreach>
+            </if>
+        </where>
+    </select>
+    
+    <select id="getTurnover">
+        select count(id) as  count, sum(amount) as turnover
+        from orders where order_time >= #{startTime} and #{endTime} > order_time
+        <if test="statusList != null">
+            and status in
+            <foreach collection="statusList" item="status" separator="," open="(" close=")">
+                #{status}
+            </foreach>
+        </if>
+    </select>
+</mapper>
