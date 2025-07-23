@@ -1,13 +1,11 @@
 package com.sky.controller.admin;
 
 
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.result.Result;
 import com.sky.service.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController(value = "adminShopController")
 @RequestMapping("/admin/shop")
@@ -22,7 +20,7 @@ public class ShopController {
     }
 
     @PutMapping("/{status}")
-    public Result changeStatus(Integer status){
+    public Result changeStatus(@PathVariable Integer status){
         shopService.changeStatus(status);
         return Result.success();
     }

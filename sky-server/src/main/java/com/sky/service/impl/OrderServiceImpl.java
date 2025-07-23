@@ -1,11 +1,16 @@
 package com.sky.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.sky.constant.MessageConstant;
 import com.sky.dto.OrdersCancelDTO;
+import com.sky.dto.OrdersConfirmDTO;
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersRejectionDTO;
 import com.sky.entity.Orders;
 import com.sky.exception.BaseException;
 import com.sky.mapper.OrderMapper;
+import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderStatisticsVO;
@@ -16,6 +21,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -60,6 +67,35 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderStatisticsVO statistics() {
-        return orderMapper.statistics();
+        Map<Integer, Integer> map =  orderMapper.statistics();
+        OrderStatisticsVO orderStatisticsVO = new OrderStatisticsVO();
+        orderStatisticsVO.setToBeConfirmed(map.getOrDefault(OrderVO.TO_BE_CONFIRMED, 0));
+        orderStatisticsVO.setConfirmed(map.getOrDefault(OrderVO.CONFIRMED, 0));
+        orderStatisticsVO.setDeliveryInProgress(map.getOrDefault(OrderVO.DELIVERY_IN_PROGRESS, 0));
+        return orderStatisticsVO;
+    }
+
+    @Override
+    public void confirm(OrdersConfirmDTO ordersConfirmDTO) {
+        Orders order = new Orders();
+        BeanUtils.copyProperties(ordersConfirmDTO, order);
+        order.setStatus(OrderVO.CONFIRMED);
+        orderMapper.updateOrder(order);
+    }
+
+    @Override
+    public void delivery(Long id) {
+        Orders order = new Orders();
+        order.setId(id);
+        order.setStatus(OrderVO.DELIVERY_IN_PROGRESS);
+        orderMapper.updateOrder(order);
+    }
+
+    @Override
+    public PageResult conditionSearch(OrdersPageQueryDTO dto) {
+        PageHelper.startPage(dto.getPage(), dto.getPageSize());
+        List<OrderVO> list = orderMapper.conditionSearch(dto);
+        PageInfo<OrderVO> pageInfo = new PageInfo<>(list);
+        return new PageResult(pageInfo.getTotal(), pageInfo.getList());
     }
 }
