@@ -31,4 +31,21 @@
         where order_time >= #{begin} and #{end} > order_time and pay_status = 1
         group by day order by day
     </select>
+
+    <select id="orderStatistics">
+        select DATE(checkout_time) as day, count(*) as number from orders
+        where order_time >= #{begin} and #{end} > order_time
+        <if test="status != null">
+            and status = #{status}
+        </if>
+        group by day order by day
+    </select>
+
+    <select id="getTotalOrderNum">
+        select count(*) from orders
+        where order_time >= #{begin} and #{end} > order_time
+        <if test="status != null">
+            and status = #{status}
+        </if>
+    </select>
 </mapper>

@@ -5,13 +5,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import com.sky.entity.Orders;
 import com.sky.mapper.ReportMapper;
 import com.sky.service.ReportService;
+import com.sky.vo.OrderReportVO;
 import com.sky.vo.SalesTop10ReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -37,6 +40,7 @@ public class ReportServiceImpl implements ReportService {
         return new SalesTop10ReportVO(nameList.toString(), numberList.toString());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public UserReportVO userStatistics(LocalDate begin, LocalDate end) {
         LocalDateTime beginTime = begin.atStartOfDay();
@@ -87,5 +91,51 @@ public class ReportServiceImpl implements ReportService {
         turnoverList.deleteCharAt(turnoverList.length() - 1);
         dateList.deleteCharAt(dateList.length() - 1);
         return new TurnoverReportVO(dateList.toString(), turnoverList.toString());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public OrderReportVO orderStatistics(LocalDate begin, LocalDate end) {
+        LocalDateTime beginTime = begin.atStartOfDay();
+        LocalDateTime endTime = end.atStartOfDay().plusDays(1);
+        // 需要进行四次查询
+        int orderNum = reportMapper.getTotalOrderNum(beginTime, endTime, null);
+        int validOrderNum = reportMapper.getTotalOrderNum(beginTime, endTime, Orders.COMPLETED);
+        List<Map<String, Object>> orderList = reportMapper.orderStatistics(beginTime, endTime, null);
+        List<Map<String, Object>> paidOrderList = reportMapper.orderStatistics(beginTime, endTime, Orders.COMPLETED);
+        // 先设置基本类型变量
+        OrderReportVO vo = new OrderReportVO();
+        vo.setValidOrderCount(validOrderNum);
+        vo.setTotalOrderCount(orderNum);
+        vo.setOrderCompletionRate(orderNum == 0? 0.0 :validOrderNum * 1.0 / orderNum);
+        // 构造字符串类型
+        int i = 0, j=0;
+        StringBuilder dateList = new StringBuilder();
+        StringBuilder orderCountList = new StringBuilder();
+        StringBuilder validOrderCountList = new StringBuilder();
+        for(LocalDate start = begin; start.isBefore(end) || start.isEqual(end); start = start.plusDays(1)){
+            int dayOrderNum = 0;
+            if(orderList.size() > i && start.equals(orderList.get(i).get("day"))){
+                dayOrderNum = ((Long) orderList.get(i).get("order_count")).intValue();
+                i++;
+            }
+            int dayValidOrderNum = 0;
+            if(paidOrderList.size() > j && start.equals(paidOrderList.get(j).get("day"))){
+                dayValidOrderNum = ((Long) paidOrderList.get(j).get("order_count")).intValue();
+                j++;
+            }
+            dateList.append(start).append(",");
+            orderCountList.append(dayOrderNum).append(",");
+            validOrderCountList.append(dayValidOrderNum).append(",");
+        }
+        //清除末尾逗号
+        dateList.deleteCharAt(dateList.length() - 1);
+        orderCountList.deleteCharAt(orderCountList.length() - 1);
+        validOrderCountList.deleteCharAt(validOrderCountList.length() - 1);
+        // 填充vo
+        vo.setDateList(dateList.toString());
+        vo.setOrderCountList(orderCountList.toString());
+        vo.setValidOrderCountList(validOrderCountList.toString());
+        return vo;
     }
 }

@@ -50,4 +50,11 @@ public class ReportController {
         log.info("按天统计营业额度");
         return Result.success(reportService.turnoverStatistics(begin, end));
     }
+
+    //按天统计订单数量
+    @GetMapping("/ordersStatistics")
+    public Result orderStatistics(@RequestParam LocalDate begin, @RequestParam LocalDate end) {
+        log.info("按天统计订单数量");
+        return Result.success(reportService.orderStatistics(begin, end));
+    }
 }

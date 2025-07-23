@@ -22,4 +22,9 @@ public interface ReportMapper {
     Integer getUserNumBefore(LocalDateTime begin);
 
     List<Map<String, Object>> turnoverStatistics(LocalDateTime begin, LocalDateTime end);
+
+    List<Map<String, Object>> orderStatistics(LocalDateTime begin, LocalDateTime end, Integer status);
+
+
+    Integer getTotalOrderNum(LocalDateTime begin, LocalDateTime end, Integer status);
 }
