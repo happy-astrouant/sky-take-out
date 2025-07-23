@@ -3,6 +3,7 @@ package com.sky.controller.admin;
 import com.sky.result.Result;
 import com.sky.service.ReportService;
 import com.sky.vo.SalesTop10ReportVO;
+import com.sky.vo.UserReportVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,14 @@ public class ReportController {
     public Result top10(@RequestParam LocalDate begin, @RequestParam LocalDate end) {
         log.info("查询销量前10的菜品");
         SalesTop10ReportVO vo = reportService.top10(begin, end);
+        return Result.success(vo);
+    }
+
+    //按天统计用户数量
+    @GetMapping("/userStatistics")
+    public Result userStatistics(@RequestParam LocalDate begin, @RequestParam LocalDate end) {
+        log.info("按天统计用户数量");
+        UserReportVO vo = reportService.userStatistics(begin, end);
         return Result.success(vo);
     }
 }

@@ -3,9 +3,26 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sky.mapper.ReportMapper">
     <select id="top10Dish">
-        select d.name as name, count(*) as count from
-        dish d left join order_detail od on d.id = od.dish_id left join orders o on od.order_id = o.id
-        where order_time >= #{begin} and #{end} > order_time and o.status = 5
-        group by d.id order by count desc limit 10
+        SELECT
+        d.name as name,
+        COALESCE(COUNT(o.id), 0) as number
+        FROM dish d
+        LEFT JOIN order_detail od ON d.id = od.dish_id
+        LEFT JOIN (
+            SELECT id
+            FROM orders
+            WHERE status = 5
+            AND order_time >= #{begin}
+            AND #{end} > order_time
+        ) o ON od.order_id = o.id
+        GROUP BY d.id, d.name
+        ORDER BY number DESC, d.name
+        LIMIT 10
+    </select>
+
+    <select id="userStatistics">
+        select date(create_time) as day, count(id) as number from user
+        where create_time >= #{begin} and #{end} > create_time
+        group by day order by day
     </select>
 </mapper>

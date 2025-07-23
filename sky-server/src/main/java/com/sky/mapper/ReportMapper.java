@@ -15,4 +15,9 @@ public interface ReportMapper {
     *
     * */
     List<Map<String, Object>> top10Dish(LocalDateTime begin, LocalDateTime end);
+
+    List<Map<String, Object>> userStatistics(LocalDateTime begin, LocalDateTime end);
+
+    @Select("select count(id) from user where create_time < #{begin}")
+    Integer getUserNumBefore(LocalDateTime begin);
 }
