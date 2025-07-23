@@ -21,7 +21,7 @@ public interface OrderMapper {
 
     void updateOrder(Orders order);
 
-    Map<Integer, Integer> statistics();
+    List<Map<String, Object>> statistics();
 
     List<OrderVO> conditionSearch(OrdersPageQueryDTO dto);
 }

@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @RestController
 @RequestMapping("/admin/order")
@@ -66,7 +68,19 @@ public class OrderController {
     }
 
     @GetMapping("/conditionSearch")
-    public Result conditionSearch(@RequestBody OrdersPageQueryDTO dto){
+    public Result conditionSearch(
+            @RequestParam(required = false) LocalDateTime beginTime,
+            @RequestParam(required = false) LocalDateTime endTime,
+            @RequestParam(required = false) Integer status,
+            @RequestParam Integer page,
+            @RequestParam Integer pageSize) {
+
+        OrdersPageQueryDTO dto = new OrdersPageQueryDTO();
+        dto.setBeginTime(beginTime);
+        dto.setEndTime(endTime);
+        dto.setStatus(status);
+        dto.setPage(page);
+        dto.setPageSize(pageSize);
         return Result.success(orderService.conditionSearch(dto));
     }
 

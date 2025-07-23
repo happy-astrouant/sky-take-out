@@ -67,11 +67,21 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderStatisticsVO statistics() {
-        Map<Integer, Integer> map =  orderMapper.statistics();
+        List<Map<String, Object>> maps =  orderMapper.statistics();
         OrderStatisticsVO orderStatisticsVO = new OrderStatisticsVO();
-        orderStatisticsVO.setToBeConfirmed(map.getOrDefault(OrderVO.TO_BE_CONFIRMED, 0));
-        orderStatisticsVO.setConfirmed(map.getOrDefault(OrderVO.CONFIRMED, 0));
-        orderStatisticsVO.setDeliveryInProgress(map.getOrDefault(OrderVO.DELIVERY_IN_PROGRESS, 0));
+        for(Map<String, Object>map: maps){
+            switch (map.get("status").toString()){
+                case "2":
+                    orderStatisticsVO.setToBeConfirmed((Integer) map.getOrDefault("count", 0));
+                    break;
+                case "3":
+                    orderStatisticsVO.setConfirmed((Integer) map.getOrDefault("count", 0));
+                    break;
+                case "4":
+                    orderStatisticsVO.setDeliveryInProgress((Integer) map.getOrDefault("count", 0));
+                    break;
+            }
+        }
         return orderStatisticsVO;
     }
 
