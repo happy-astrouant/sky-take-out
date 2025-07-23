@@ -11,7 +11,7 @@
         LEFT JOIN (
             SELECT id
             FROM orders
-            WHERE status = 5
+            WHERE pay_status = 1
             AND order_time >= #{begin}
             AND #{end} > order_time
         ) o ON od.order_id = o.id
@@ -23,6 +23,12 @@
     <select id="userStatistics">
         select date(create_time) as day, count(id) as number from user
         where create_time >= #{begin} and #{end} > create_time
+        group by day order by day
+    </select>
+
+    <select id="turnoverStatistics">
+        select date(order_time) as day, sum(amount) as turnover from orders
+        where order_time >= #{begin} and #{end} > order_time and pay_status = 1
         group by day order by day
     </select>
 </mapper>

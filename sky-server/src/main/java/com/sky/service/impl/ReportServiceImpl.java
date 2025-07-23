@@ -8,6 +8,7 @@ import java.util.Map;
 import com.sky.mapper.ReportMapper;
 import com.sky.service.ReportService;
 import com.sky.vo.SalesTop10ReportVO;
+import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,5 +64,28 @@ public class ReportServiceImpl implements ReportService {
         totalUserList.deleteCharAt(totalUserList.length() - 1);
         newUserList.deleteCharAt(newUserList.length() - 1);
         return new UserReportVO(dateList.toString(), totalUserList.toString(), newUserList.toString());
+    }
+
+    @Override
+    public TurnoverReportVO turnoverStatistics(LocalDate begin, LocalDate end) {
+        LocalDateTime beginTime = begin.atStartOfDay();
+        LocalDateTime endTime = end.atStartOfDay().plusDays(1);
+
+        List<Map<String, Object>> list = reportMapper.turnoverStatistics(beginTime, endTime);
+
+        StringBuilder dateList = new StringBuilder();
+        StringBuilder turnoverList = new StringBuilder();
+        int i = 0;
+        for(LocalDate start = begin; start.isBefore(end) || start.isEqual(end); start = start.plusDays(1)){
+            double dayAmount = 0;
+            if(list.size() > i &&  start.equals(list.get(i).get("day"))){
+                dayAmount = ((Long) list.get(i).get("turnover")).intValue();
+            }
+            turnoverList.append(dayAmount).append(",");
+            dateList.append(start).append(",");
+        }
+        turnoverList.deleteCharAt(turnoverList.length() - 1);
+        dateList.deleteCharAt(dateList.length() - 1);
+        return new TurnoverReportVO(dateList.toString(), turnoverList.toString());
     }
 }

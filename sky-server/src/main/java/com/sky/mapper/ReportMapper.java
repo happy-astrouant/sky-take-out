@@ -20,4 +20,6 @@ public interface ReportMapper {
 
     @Select("select count(id) from user where create_time < #{begin}")
     Integer getUserNumBefore(LocalDateTime begin);
+
+    List<Map<String, Object>> turnoverStatistics(LocalDateTime begin, LocalDateTime end);
 }

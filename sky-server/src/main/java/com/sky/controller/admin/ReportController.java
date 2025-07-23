@@ -43,4 +43,11 @@ public class ReportController {
         UserReportVO vo = reportService.userStatistics(begin, end);
         return Result.success(vo);
     }
+
+    //按天统计营业额度
+    @GetMapping("/turnoverStatistics")
+    public Result turnoverStatistics(@RequestParam LocalDate begin, @RequestParam LocalDate end) {
+        log.info("按天统计营业额度");
+        return Result.success(reportService.turnoverStatistics(begin, end));
+    }
 }
