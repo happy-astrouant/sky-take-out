@@ -21,5 +21,4 @@ public interface CategoryService {
 
     List<Category> list(Integer type);
 
-    List<Category> listAll();
 }

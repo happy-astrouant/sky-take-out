@@ -36,7 +36,7 @@ public interface CategoryMapper {
     @Delete("delete from category where id = #{id}")
     void delete(Long id);
 
-    @Select("select * from category where type = #{type}")
+//    @Select("select * from category where type = #{type}")
     List<Category> list(@Param("type") Integer type);
 
     @Select("select count(1) from category where name = #{name}")

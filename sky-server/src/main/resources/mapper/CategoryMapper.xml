@@ -30,4 +30,11 @@
         insert into category (type, name, sort, status, create_time, update_time, create_user, update_user)
         values (#{type}, #{name}, #{sort}, #{status}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
     </insert>
+
+    <select id="list">
+        select * from category
+        <if test="type != null">
+            where type = #{type}
+        </if>
+    </select>
 </mapper>

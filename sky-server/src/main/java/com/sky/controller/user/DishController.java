@@ -23,6 +23,6 @@ public class DishController {
     @GetMapping("/list")
     public Result<List<DishVO>> getDishList(@RequestParam Integer categoryId){
         List<DishVO> list = dishService.listWithFlavor(categoryId);
-        return Result.success();
+        return Result.success(list);
     }
 }
