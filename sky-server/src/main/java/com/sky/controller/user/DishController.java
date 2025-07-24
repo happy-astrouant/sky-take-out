@@ -31,13 +31,7 @@ public class DishController {
     @GetMapping("/list")
     @Cacheable(value = CacheConstant.CATEGORY_DISH_CACHE, key = "#categoryId")
     public Result<List<DishVO>> getDishList(@RequestParam Integer categoryId){
-        String key = "dishList_" + categoryId;
-        List<DishVO> list = (List<DishVO>) redisTemplate.opsForValue().get(key);
-
-        if(list == null){
-            list = dishService.listWithFlavor(categoryId);
-            redisTemplate.opsForValue().set(key, list);
-        }
+        List<DishVO> list = dishService.listWithFlavor(categoryId);
         return Result.success(list);
     }
 }

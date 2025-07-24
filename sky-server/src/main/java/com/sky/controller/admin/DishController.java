@@ -29,7 +29,7 @@ public class DishController {
     /*修改菜品，清理对应的分类缓存，以及清除全部的setmeal_dish缓存*/
     @PutMapping
     @Caching(evict = {
-        @CacheEvict(value = CacheConstant.CATEGORY_SETMEAL_CACHE, key = "#dishDTO.categoryId"),
+        @CacheEvict(value = CacheConstant.CATEGORY_DISH_CACHE, key = "#dishDTO.categoryId"),
         @CacheEvict(value = CacheConstant.SETMEAL_DISH_CACHE, allEntries = true)
     })
     public Result update(@RequestBody DishDTO dishDTO) {
@@ -42,7 +42,7 @@ public class DishController {
      */
     @DeleteMapping
     @Caching(evict = {
-        @CacheEvict(value = CacheConstant.CATEGORY_SETMEAL_CACHE, allEntries = true),
+        @CacheEvict(value = CacheConstant.CATEGORY_DISH_CACHE, allEntries = true),
         @CacheEvict(value = CacheConstant.SETMEAL_DISH_CACHE, allEntries = true)
     })
     public Result delete(Long[] ids) {
@@ -60,7 +60,7 @@ public class DishController {
      */
     @PostMapping
     @Caching(evict = {
-        @CacheEvict(value = CacheConstant.CATEGORY_SETMEAL_CACHE, key = "#dishDTO.categoryId"),
+        @CacheEvict(value = CacheConstant.CATEGORY_DISH_CACHE, key = "#dishDTO.categoryId"),
         @CacheEvict(value = CacheConstant.SETMEAL_DISH_CACHE, allEntries = true)
     })
     public Result save(@RequestBody DishDTO dishDTO) {
@@ -102,7 +102,7 @@ public class DishController {
      */
     @PostMapping("/status/{status}")
     @Caching(evict = {
-            @CacheEvict(value = CacheConstant.CATEGORY_SETMEAL_CACHE, allEntries = true),
+            @CacheEvict(value = CacheConstant.CATEGORY_DISH_CACHE, allEntries = true),
             @CacheEvict(value = CacheConstant.SETMEAL_DISH_CACHE, allEntries = true)
     })
     public Result updateStatus(@PathVariable Integer status, Long id) {

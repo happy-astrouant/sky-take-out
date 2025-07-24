@@ -35,13 +35,7 @@ public class SetmealController {
     @Cacheable(value = CacheConstant.CATEGORY_SETMEAL_CACHE, key = "#categoryId")
     public Result<List<Setmeal>> list(Integer categoryId) {
         log.info("查询分类id为{}的套餐数据", categoryId);
-        String key = "setmeal_" + categoryId;
-        List<Setmeal> list = (List<Setmeal>) redisTemplate.opsForValue().get(key);
-        if(list == null){
-            list = setmealService.getSetmealsByCategoryId(categoryId);
-            redisTemplate.opsForValue().set(key, list);
-            log.info("缓存未命中，将数据缓存到Redis");
-        }
+        List<Setmeal> list = setmealService.getSetmealsByCategoryId(categoryId);
         return Result.success(list);
     }
 
@@ -49,12 +43,7 @@ public class SetmealController {
     @Cacheable(value = CacheConstant.SETMEAL_DISH_CACHE, key = "#id")
     public Result<List<DishItemVO>> getByIdWithDish(Long id) {
         log.info("查询套餐id为{}的菜品数据集合", id);
-        String key = "dishFlavor_" + id;
-        List<DishItemVO> list = (List<DishItemVO>) redisTemplate.opsForValue().get(key);
-        if(list == null){
-            list = dishService.getDishItemBySetmealId(id);
-            redisTemplate.opsForValue().set(key, list);
-        }
+        List<DishItemVO> list = dishService.getDishItemBySetmealId(id);
         return Result.success(list);
     }
 
