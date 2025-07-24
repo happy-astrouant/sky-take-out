@@ -20,4 +20,6 @@ public interface CategoryService {
     int delete(Long id);
 
     List<Category> list(Integer type);
+
+    List<Category> listAll();
 }

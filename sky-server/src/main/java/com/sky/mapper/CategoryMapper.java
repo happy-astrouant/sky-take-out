@@ -41,4 +41,7 @@ public interface CategoryMapper {
 
     @Select("select count(1) from category where name = #{name}")
     int countByName(@Param("name") String name);
+
+    @Select("select * from category")
+    List<Category> listAll();
 }

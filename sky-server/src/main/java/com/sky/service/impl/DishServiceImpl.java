@@ -112,6 +112,15 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
+    public List<DishVO> listWithFlavor(Integer categoryId){
+        List<DishVO> dishList = dishMapper.listDetailsByCategoryId(categoryId);
+        for(DishVO dish: dishList){
+            dish.setFlavors(dishFlavorMapper.list(dish.getId()));
+        }
+        return dishList;
+    }
+
+    @Override
     public void updateStatus(Integer status, Long id) {
         Dish dish = new Dish();
         dish.setStatus(status);

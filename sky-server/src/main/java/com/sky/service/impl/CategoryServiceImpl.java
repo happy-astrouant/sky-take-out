@@ -92,5 +92,10 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryMapper.list(type);
     }
 
+    @Override
+    public List<Category> listAll() {
+        return categoryMapper.listAll();
+    }
+
 
 }
