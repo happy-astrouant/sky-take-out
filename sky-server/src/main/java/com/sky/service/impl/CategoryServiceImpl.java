@@ -3,8 +3,10 @@ package com.sky.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
 import com.sky.entity.Category;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.CategoryMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealMapper;
@@ -69,17 +71,18 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public int delete(Long id) {
+    public void delete(Long id) {
         // 先查询出该分类的类型
         Integer type = categoryMapper.getTypeById(id);
+        if(type == null) type = 0;
         // 如果分类是菜品，需要去菜品数据库中检查是否存在关联
         if(type == 1){
             if(dishMapper.countByCategoryId(id) > 0){
-                return 1;
+                throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_DISH);
             }
         } else if(type == 2){
             if(setmealMapper.countByCategoryId(id) > 0){
-                return 2;
+                throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_SETMEAL);
             }
         }
 

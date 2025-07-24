@@ -17,7 +17,7 @@ public interface CategoryService {
 
     boolean save(Category category);
 
-    int delete(Long id);
+    void delete(Long id);
 
     List<Category> list(Integer type);
 

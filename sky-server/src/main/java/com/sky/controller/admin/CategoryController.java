@@ -75,11 +75,7 @@ public class CategoryController {
     @DeleteMapping
     public Result delete(@RequestParam Long id) {
         log.info("删除分类：{}", id);
-        int res = categoryService.delete(id);
-        if(res == 1)
-            return Result.error(MessageConstant.CATEGORY_BE_RELATED_BY_DISH);
-        if(res == 2)
-            return Result.error(MessageConstant.CATEGORY_BE_RELATED_BY_SETMEAL);
+        categoryService.delete(id);
         return Result.success();
     }
 
