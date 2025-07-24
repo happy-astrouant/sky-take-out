@@ -112,4 +112,11 @@ public class SetmealServiceImpl implements SetmealService {
         setmealVO.setSetmealDishes(setmealDishes);
         return setmealVO;
     }
+
+    @Override
+    public List<Setmeal> getSetmealsByCategoryId(Integer categoryId) {
+        return setmealMapper.getSetmealByCategoryId(categoryId);
+    }
+
+
 }

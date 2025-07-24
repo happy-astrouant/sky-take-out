@@ -13,6 +13,7 @@ import com.sky.mapper.DishMapper;
 import com.sky.mapper.OrderMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
+import com.sky.vo.DishItemVO;
 import com.sky.vo.DishVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,5 +127,10 @@ public class DishServiceImpl implements DishService {
         dish.setStatus(status);
         dish.setId(id);
         dishMapper.updateStatus(dish);
+    }
+
+    @Override
+    public List<DishItemVO> getDishItemBySetmealId(Long id) {
+        return dishMapper.getDishItemBySetmealId(id);
     }
 }

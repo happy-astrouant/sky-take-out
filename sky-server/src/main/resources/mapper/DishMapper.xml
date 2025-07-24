@@ -65,4 +65,9 @@
             </if>
         </where>
     </select>
+
+    <select id="getDishItemBySetmealId">
+        select sd.name as name, sd.copies as copies, d.description as description, d.image as image
+        from setmeal_dish sd left join dish d on sd.dish_id = dish_id where sd.setmeal_id = #{id} ;
+    </select>
 </mapper>

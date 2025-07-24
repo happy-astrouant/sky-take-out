@@ -4,6 +4,7 @@ import com.sky.annotation.AutoFill;
 import com.sky.dto.DishDTO;
 import com.sky.entity.Dish;
 import com.sky.enumeration.OperationType;
+import com.sky.vo.DishItemVO;
 import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -48,4 +49,7 @@ public interface DishMapper {
 
     @Select("select * from dish where status = 1 and category_id = #{categoryId}")
     List<DishVO> listDetailsByCategoryId(Integer categoryId);
+
+
+    List<DishItemVO> getDishItemBySetmealId(Long id);
 }
