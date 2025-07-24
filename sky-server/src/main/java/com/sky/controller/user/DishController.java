@@ -5,6 +5,8 @@ import com.sky.service.DishService;
 import com.sky.vo.DishVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,9 +22,18 @@ public class DishController {
     @Autowired
     private DishService dishService;
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
     @GetMapping("/list")
     public Result<List<DishVO>> getDishList(@RequestParam Integer categoryId){
-        List<DishVO> list = dishService.listWithFlavor(categoryId);
+        String key = "dishList_" + categoryId;
+        List<DishVO> list = (List<DishVO>) redisTemplate.opsForValue().get(key);
+
+        if(list == null){
+            list = dishService.listWithFlavor(categoryId);
+            redisTemplate.opsForValue().set(key, list);
+        }
         return Result.success(list);
     }
 }
