@@ -1,6 +1,7 @@
 package com.sky.controller.admin;
 
 
+import com.sky.constant.CacheConstant;
 import com.sky.constant.MessageConstant;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
@@ -11,6 +12,8 @@ import com.sky.service.SetmealService;
 import com.sky.vo.SetmealVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +30,10 @@ public class SetmealController {
     * 修改套餐信息
     * */
     @PutMapping
+    @Caching(evict = {
+        @CacheEvict(value = CacheConstant.CATEGORY_SETMEAL_CACHE, key = "#setmealDTO.categoryId"),
+        @CacheEvict(value = CacheConstant.SETMEAL_DISH_CACHE, key = "#setmealDTO.id")
+    })
     public Result update(@RequestBody SetmealDTO setmealDTO) {
         log.info("套餐-更新内容：{}", setmealDTO);
         setmealService.update(setmealDTO);
@@ -43,6 +50,7 @@ public class SetmealController {
 
     /**新增套餐*/
     @PostMapping
+    @CacheEvict(value = CacheConstant.CATEGORY_SETMEAL_CACHE, key = "#setmealDTO.categoryId")
     public Result save(@RequestBody SetmealDTO setmealDTO) {
         log.info("套餐-保存：{}", setmealDTO);
         try {
@@ -55,6 +63,10 @@ public class SetmealController {
 
     /*开售或停售套餐*/
     @PostMapping("/status/{status}")
+    @Caching(evict = {
+        @CacheEvict(value = CacheConstant.CATEGORY_SETMEAL_CACHE, allEntries = true),
+        @CacheEvict(value = CacheConstant.SETMEAL_DISH_CACHE, key = "#id")
+    })
     public Result updateStatus(@PathVariable Integer status, Long id) {
         log.info("套餐-{} 起售或停售：{}", id, status);
         try{
@@ -67,6 +79,10 @@ public class SetmealController {
 
     /**批量删除套餐*/
     @DeleteMapping
+    @Caching(evict = {
+        @CacheEvict(value = CacheConstant.CATEGORY_SETMEAL_CACHE, allEntries = true),
+        @CacheEvict(value = CacheConstant.SETMEAL_DISH_CACHE, allEntries = true)
+    })
     public Result delete(@RequestParam List<Long> ids) {
         log.info("批量删除套餐：{}", ids);
         try {
