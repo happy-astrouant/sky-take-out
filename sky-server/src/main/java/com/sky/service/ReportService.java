@@ -15,5 +15,5 @@ public interface ReportService {
 
     TurnoverReportVO turnoverStatistics(LocalDate begin, LocalDate end);
 
-    OrderReportVO orderStatistics(LocalDate begin, LocalDate end);
+    OrderReportVO orderStatistics(java.time.LocalDate begin, java.time.LocalDate end);
 }
