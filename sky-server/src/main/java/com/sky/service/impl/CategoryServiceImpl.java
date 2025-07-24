@@ -87,7 +87,6 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         categoryMapper.delete(id);
-        return 0;
     }
 
     @Override
