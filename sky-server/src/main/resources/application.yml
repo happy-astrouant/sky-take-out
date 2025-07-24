@@ -65,10 +65,10 @@ sky:
     user-ttl: 7200000
     user-token-name: authentication
   alioss:
-    access-key-id: LTAI5t6asCvRHARMqNMybDD1
-    access-key-secret:
+    access-key-id: ${sky.alioss.access-key-id}
+    access-key-secret: ${sky.alioss.access-key-secret}
     endpoint: oss-cn-beijing.aliyuncs.com
     bucket-name: java-web-xzy
   wechat:
-    appid: wx2665bc8e8155ddc6
-    secret:
+    appid: ${sky.wechat.appid}
+    secret: ${sky.wechat.secret}
