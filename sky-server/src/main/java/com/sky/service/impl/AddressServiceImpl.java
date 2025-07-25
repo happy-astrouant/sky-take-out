@@ -36,14 +36,19 @@ public class AddressServiceImpl implements AddressService {
     @Transactional
     public void setDefault(AddressBook addressBook) {
         AddressBook defaultAddress = addressMapper.getDefault(BaseContext.getCurrentId());
+        if(defaultAddress != null){
+            defaultAddress.setIsDefault(0);
+            addressMapper.setDefault(defaultAddress);
+        }
         addressBook.setIsDefault(1);
-        defaultAddress.setIsDefault(0);
+
         addressMapper.setDefault(addressBook);
-        addressMapper.setDefault(defaultAddress);
+
     }
 
     @Override
     public void save(AddressBook addressBook) {
+        addressBook.setIsDefault(0);
         addressMapper.save(addressBook);
     }
 

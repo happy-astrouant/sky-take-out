@@ -42,7 +42,7 @@ public class AddressController {
     }
 
     // 设置默认地址
-    @PostMapping("/default")
+    @PutMapping("/default")
     @Caching(
         evict = {
             @CacheEvict(value = CacheConstant.ADDRESS_CACHE, allEntries = true),

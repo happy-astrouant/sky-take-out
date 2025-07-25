@@ -27,18 +27,36 @@
     <update id="update" parameterType="com.sky.entity.AddressBook">
         update address_book set
             user_id = #{userId},
-            consignee = #{consignee},
+            <if test="consignee != null">
+                consignee = #{consignee},
+            </if>
             sex = #{sex},
             phone = #{phone},
-            province_code = #{provinceCode},
-            province_name = #{provinceName},
-            city_code = #{cityCode},
-            city_name = #{cityName},
-            district_code = #{districtCode},
-            district_name = #{districtName},
-            detail = #{detail},
-            label = #{label},
-            is_default = #{isDefault}
+            <if test="provinceCode != null">
+                province_code = #{provinceCode},
+            </if>
+            <if test="provinceName != null">
+                province_name = #{provinceName},
+            </if>
+            <if test="cityCode != null">
+                city_code = #{cityCode},
+            </if>
+            <if test="cityName != null">
+                city_name = #{cityName},
+            </if>
+            <if test="districtCode != null">
+                district_code = #{districtCode},
+            </if>
+            <if test="districtName != null">
+                district_name = #{districtName},
+            </if>
+            <if test="label != null">
+                label = #{label},
+            </if>
+            <if test="isDefault != null">
+                is_default = #{isDefault}
+            </if>
+            detail = #{detail}
         where id = #{id}
     </update>
 </mapper>
