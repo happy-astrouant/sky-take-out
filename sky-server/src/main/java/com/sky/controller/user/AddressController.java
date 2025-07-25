@@ -78,14 +78,14 @@ public class AddressController {
     }
 
     // 删除地址
-    @DeleteMapping
+    @DeleteMapping("/")
     @Caching(
         evict = {
             @CacheEvict(value = CacheConstant.ADDRESS_CACHE, key = "#id"),
             @CacheEvict(value = CacheConstant.DEFAULT_ADDRESS_CACHE, allEntries = true),
         }
     )
-    public Result delete(Long id) {
+    public Result delete(@RequestParam Long id) {
         addressService.delete(id);
         return Result.success();
     }
