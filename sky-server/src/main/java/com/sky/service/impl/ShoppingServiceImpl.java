@@ -62,4 +62,27 @@ public class ShoppingServiceImpl implements ShoppingService {
             shoppingMapper.updateNumberById(cart);
         }
     }
+
+    @Override
+    public void clean() {
+        shoppingMapper.clean(BaseContext.getCurrentId());
+    }
+
+    @Override
+    public List<ShoppingCart> list() {
+        return shoppingMapper.listAll();
+    }
+
+    @Override
+    public void sub(ShoppingCartDTO dto) {
+        ShoppingCart cart = ShoppingCart.builder()
+                .userId(BaseContext.getCurrentId())
+                .dishId(dto.getDishId())
+                .setmealId(dto.getSetmealId())
+                .dishFlavor(dto.getDishFlavor())
+                .build();
+        shoppingMapper.delete(cart);
+    }
+
+
 }
