@@ -12,16 +12,17 @@ import com.sky.exception.ShoppingCartBusinessException;
 import com.sky.mapper.*;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
+import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,11 +46,13 @@ public class OrderServiceImpl implements OrderService {
     private OrderDetailMapper orderDetailMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public OrderVO getById(Long id) {
         OrderVO orderVO = orderMapper.getById(id);
         if(orderVO == null){
             throw new BaseException(MessageConstant.ORDER_NOT_FOUND);
         }
+        orderVO.setOrderDetailList(orderDetailMapper.getByOrderId(id));
         return orderVO;
     }
 
@@ -118,10 +121,51 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.updateOrder(order);
     }
 
+    private String getOrderDishes(List<OrderDetail> list){
+
+        if(list == null || list.isEmpty()){
+            return "";
+        }
+        StringBuilder dishBuilder = new StringBuilder();
+        StringBuilder setmealBuilder = new StringBuilder();
+        for(OrderDetail orderDetail: list){
+            if(orderDetail.getDishId() != null){
+                dishBuilder.append(orderDetail.getName());
+                if(orderDetail.getDishFlavor() != null){
+                    dishBuilder.append("(").append(orderDetail.getDishFlavor()).append(")");
+                }
+                dishBuilder.append("*").append(orderDetail.getNumber());
+                dishBuilder.append(", ");
+            } else {
+                setmealBuilder.append(orderDetail.getName());
+                setmealBuilder.append("*").append(orderDetail.getNumber());
+                setmealBuilder.append(", ");
+            }
+        }
+        if(!dishBuilder.isEmpty()){
+            // 头部插入菜品：
+            dishBuilder.insert(0, "菜品：");
+            dishBuilder.deleteCharAt(dishBuilder.length() - 1);
+            dishBuilder.append("，");
+        }
+        if(!setmealBuilder.isEmpty()){
+            // 头部插入套餐：
+            setmealBuilder.insert(0, "套餐：");
+            setmealBuilder.deleteCharAt(setmealBuilder.length() - 1);
+            setmealBuilder.append("，");
+        }
+        return dishBuilder.append(setmealBuilder).toString();
+    }
+
     @Override
+    @Transactional(readOnly = true)
     public PageResult conditionSearch(OrdersPageQueryDTO dto) {
         PageHelper.startPage(dto.getPage(), dto.getPageSize());
         List<OrderVO> list = orderMapper.conditionSearch(dto);
+        list.forEach(orderVO -> {
+            List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orderVO.getId());
+            orderVO.setOrderDishes(getOrderDishes(orderDetailList));
+        });
         PageInfo<OrderVO> pageInfo = new PageInfo<>(list);
         return new PageResult(pageInfo.getTotal(), pageInfo.getList());
     }
@@ -186,6 +230,61 @@ public class OrderServiceImpl implements OrderService {
             details.add(orderDetail);
         }
         orderDetailMapper.insert(details);
+        return OrderSubmitVO.builder()
+                .id(orders.getId())
+                .orderNumber(orders.getNumber())
+                .orderAmount(orders.getAmount())
+                .orderTime(orders.getOrderTime())
+                .build();
+    }
 
+    @Override
+    @Transactional(readOnly = true)
+    public PageResult userHistoryOrders(OrdersPageQueryDTO dto) {
+        PageHelper.startPage(dto.getPage(), dto.getPageSize());
+        List<OrderVO> list = orderMapper.conditionSearch(dto);
+        list.forEach(orderVO -> {
+            List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orderVO.getId());
+            orderVO.setOrderDetailList(orderDetailList);
+        });
+        PageInfo<OrderVO> pageInfo = new PageInfo<>(list);
+        return new PageResult(pageInfo.getTotal(), pageInfo.getList());
+    }
+
+    @Override
+    @Transactional
+    public void repetition(Long id) {
+        // 先查询订单
+        Orders orders = orderMapper.getById(id);
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
+        orders.setOrderTime(LocalDateTime.now());
+        orders.setStatus(Orders.PENDING_PAYMENT);
+        orders.setPayStatus(Orders.UN_PAID);
+        orders.setCheckoutTime(null);
+        orders.setRejectionReason(null);
+        orders.setCancelReason(null);
+        orders.setCancelTime(null);
+        orders.setEstimatedDeliveryTime(null);
+        orders.setDeliveryTime(null);
+        orderMapper.insert(orders);
+        orderDetailList.forEach(orderDetail -> orderDetail.setOrderId(orders.getId()));
+        orderDetailMapper.insert(orderDetailList);
+    }
+
+    @Override
+    @Transactional
+    public OrderPaymentVO payment(OrdersPaymentDTO dto) {
+        Orders orders = orderMapper.getByOrderNumber(dto.getOrderNumber());
+        orders.setPayStatus(Orders.PAID);
+        orders.setCheckoutTime(LocalDateTime.now());
+        orders.setPayMethod(dto.getPayMethod());
+        orderMapper.updateOrder(orders);
+        OrderPaymentVO vo = new OrderPaymentVO();
+        vo.setNonceStr("");
+        vo.setPaySign("");
+        vo.setTimeStamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        vo.setSignType("");
+        vo.setPackageStr("");
+        return vo;
     }
 }
