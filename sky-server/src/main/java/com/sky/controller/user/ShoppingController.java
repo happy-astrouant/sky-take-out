@@ -41,7 +41,7 @@ public class ShoppingController {
     }
 
     // 删除一个购物车中的上坪
-    @DeleteMapping("/sub")
+    @PostMapping("/sub")
     public Result sub(@RequestBody ShoppingCartDTO dto){
         shoppingService.sub(dto);
         return Result.success();
