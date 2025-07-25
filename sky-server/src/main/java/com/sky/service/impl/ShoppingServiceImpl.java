@@ -12,6 +12,7 @@ import com.sky.mapper.ShoppingMapper;
 import com.sky.service.ShoppingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,6 +29,7 @@ public class ShoppingServiceImpl implements ShoppingService {
     private SetmealMapper setmealMapper;
 
     @Override
+    @Transactional
     public void add(ShoppingCartDTO dto) {
         // 首先判断购物车中是否已经存在该菜品
         ShoppingCart cart = ShoppingCart.builder()

@@ -11,4 +11,10 @@ public class CacheConstant {
     public static final String CATEGORY_DISH_CACHE = "categoryDishCache";
 
     public static final String CATEGORY_SET_CACHE = "categoryCache";
+
+    public static final String USER_ADDRESS_CACHE = "userAddressCache";
+
+    public static final String ADDRESS_CACHE = "addressCache";
+
+    public static final String DEFAULT_ADDRESS_CACHE = "defaultAddressCache";
 }
