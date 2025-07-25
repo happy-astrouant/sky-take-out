@@ -18,6 +18,7 @@ import java.util.Map;
 public interface OrderMapper {
 
 
+    @Select("select * from orders where id = #{id}")
     OrderVO getById(Long id);
 
     void updateOrder(Orders order);

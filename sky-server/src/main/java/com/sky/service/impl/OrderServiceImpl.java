@@ -146,13 +146,13 @@ public class OrderServiceImpl implements OrderService {
             // 头部插入菜品：
             dishBuilder.insert(0, "菜品：");
             dishBuilder.deleteCharAt(dishBuilder.length() - 1);
-            dishBuilder.append("，");
+            dishBuilder.append(". ");
         }
         if(!setmealBuilder.isEmpty()){
             // 头部插入套餐：
             setmealBuilder.insert(0, "套餐：");
             setmealBuilder.deleteCharAt(setmealBuilder.length() - 1);
-            setmealBuilder.append("，");
+            setmealBuilder.append(". ");
         }
         return dishBuilder.append(setmealBuilder).toString();
     }
@@ -197,6 +197,7 @@ public class OrderServiceImpl implements OrderService {
         orders.setStatus(Orders.PENDING_PAYMENT);
         orders.setPayStatus(Orders.UN_PAID);
         orders.setOrderTime(LocalDateTime.now());
+        orders.setNumber(String.valueOf(System.currentTimeMillis()));
 
         // 需要根据userId查询用户名
         User user = userMapper.getById(userId);
