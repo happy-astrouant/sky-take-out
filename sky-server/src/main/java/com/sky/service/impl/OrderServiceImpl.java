@@ -3,24 +3,26 @@ package com.sky.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.sky.constant.MessageConstant;
-import com.sky.dto.OrdersCancelDTO;
-import com.sky.dto.OrdersConfirmDTO;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersRejectionDTO;
-import com.sky.entity.Orders;
+import com.sky.context.BaseContext;
+import com.sky.dto.*;
+import com.sky.entity.*;
+import com.sky.exception.AddressBookBusinessException;
 import com.sky.exception.BaseException;
-import com.sky.mapper.OrderMapper;
+import com.sky.exception.ShoppingCartBusinessException;
+import com.sky.mapper.*;
 import com.sky.result.PageResult;
-import com.sky.result.Result;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderStatisticsVO;
+import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +31,18 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderMapper orderMapper;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private AddressMapper addressMapper;
+
+    @Autowired
+    private ShoppingMapper shoppingMapper;
+
+    @Autowired
+    private OrderDetailMapper orderDetailMapper;
 
     @Override
     public OrderVO getById(Long id) {
@@ -110,5 +124,68 @@ public class OrderServiceImpl implements OrderService {
         List<OrderVO> list = orderMapper.conditionSearch(dto);
         PageInfo<OrderVO> pageInfo = new PageInfo<>(list);
         return new PageResult(pageInfo.getTotal(), pageInfo.getList());
+    }
+
+    @Override
+    @Transactional
+    public OrderSubmitVO submit(OrdersSubmitDTO ordersSubmitDTO) {
+        // 检查地址信息
+        Long addressBookId = ordersSubmitDTO.getAddressBookId();
+        if(addressBookId == null){
+            throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_NULL);
+        }
+        AddressBook addressBook = addressMapper.getAddressById(addressBookId);
+        if(addressBook == null){
+            throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_NULL);
+        }
+        // 检查购物车信息
+        Long userId = BaseContext.getCurrentId();
+        ShoppingCart cart = new ShoppingCart();
+        cart.setUserId(BaseContext.getCurrentId());
+        List<ShoppingCart> list = shoppingMapper.list(cart);
+        if(list == null || list.isEmpty()){
+            throw new ShoppingCartBusinessException(MessageConstant.SHOPPING_CART_IS_NULL);
+        }
+
+        // 构造Order表的细腻
+        Orders orders = new Orders();
+        BeanUtils.copyProperties(ordersSubmitDTO, orders);
+        orders.setStatus(Orders.PENDING_PAYMENT);
+        orders.setPayStatus(Orders.UN_PAID);
+        orders.setOrderTime(LocalDateTime.now());
+
+        // 需要根据userId查询用户名
+        User user = userMapper.getById(userId);
+        orders.setUserId(userId);
+        orders.setUserName(user.getName());
+        // 填充地址信息
+        orders.setAddressBookId(addressBookId);
+        orders.setPhone(addressBook.getPhone());
+        orders.setAddress(addressBook.getDetail());
+        orders.setPhone(addressBook.getPhone());
+        orders.setConsignee(addressBook.getConsignee());
+        // 插入订单数据（需要回传ID）
+        orderMapper.insert(orders);
+
+        // 清空购物车
+        shoppingMapper.clean(userId);
+
+        // 插入orderDetail数据
+        List<OrderDetail> details = new ArrayList<>(list.size());
+        for(ShoppingCart shoppingCart : list){
+            OrderDetail orderDetail = OrderDetail.builder()
+                    .orderId(orders.getId())
+                    .name(shoppingCart.getName())
+                    .dishId(shoppingCart.getDishId())
+                    .dishFlavor(shoppingCart.getDishFlavor())
+                    .setmealId(shoppingCart.getSetmealId())
+                    .number(shoppingCart.getNumber())
+                    .amount(shoppingCart.getAmount())
+                    .image(shoppingCart.getImage())
+                    .build();
+            details.add(orderDetail);
+        }
+        orderDetailMapper.insert(details);
+
     }
 }

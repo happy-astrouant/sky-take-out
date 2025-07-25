@@ -24,4 +24,6 @@ public interface OrderMapper {
     List<Map<String, Object>> statistics();
 
     List<OrderVO> conditionSearch(OrdersPageQueryDTO dto);
+
+    void insert(Orders orders);
 }
