@@ -4,19 +4,18 @@
 <mapper namespace="com.sky.mapper.ReportMapper">
     <select id="top10Dish">
         SELECT
-        d.name as name,
-        COALESCE(COUNT(o.id), 0) as number
-        FROM dish d
-        LEFT JOIN order_detail od ON d.id = od.dish_id
-        LEFT JOIN (
+        od.name as name,
+        count(*) as number
+        FROM order_detail od
+        where od.order_id in (
             SELECT id
             FROM orders
-            WHERE pay_status = 1
+            WHERE status = 5
             AND order_time >= #{begin}
             AND #{end} > order_time
-        ) o ON od.order_id = o.id
-        GROUP BY d.id, d.name
-        ORDER BY number DESC, d.name
+        )
+        GROUP BY od.name
+        ORDER BY number DESC
         LIMIT 10
     </select>
 
@@ -28,7 +27,7 @@
 
     <select id="turnoverStatistics">
         select date(order_time) as day, sum(amount) as turnover from orders
-        where order_time >= #{begin} and #{end} > order_time and pay_status = 1
+        where order_time >= #{begin} and #{end} > order_time and status = 5
         group by day order by day
     </select>
 

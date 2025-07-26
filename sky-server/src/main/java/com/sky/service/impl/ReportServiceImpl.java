@@ -40,6 +40,7 @@ public class ReportServiceImpl implements ReportService {
     public SalesTop10ReportVO top10(LocalDate begin, LocalDate end) {
         LocalDateTime beginTime = begin.atStartOfDay();
         LocalDateTime endTime = end.atStartOfDay().plusDays(1);
+        // 统计了菜品信息
         List<Map<String, Object>> list = reportMapper.top10Dish(beginTime, endTime);
         StringBuilder nameList = new StringBuilder();
         StringBuilder numberList = new StringBuilder();
@@ -64,7 +65,7 @@ public class ReportServiceImpl implements ReportService {
         StringBuilder dateList = new StringBuilder();
         StringBuilder totalUserList = new StringBuilder();
         StringBuilder newUserList = new StringBuilder();
-        // 按日期遍历
+        // 按日期遍历，处理缺失的日期值
         int i=0;
         for(LocalDate date = begin; date.isBefore(end) || date.isEqual(end); date = date.plusDays(1)){
             dateList.append(date).append(",");
