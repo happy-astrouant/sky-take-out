@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,12 +26,6 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     @Autowired
     private WorkspaceMapper workspaceMapper;
 
-    private static final List<Integer> validStatus = new ArrayList<>();
-    static {
-        validStatus.add(Orders.CONFIRMED);
-        validStatus.add(Orders.DELIVERY_IN_PROGRESS);
-        validStatus.add(Orders.COMPLETED);
-    }
 
     @Override
     public BusinessDataVO getBusinessData() {
@@ -43,14 +38,18 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         businessDataVO.setNewUsers(workspaceMapper.getNewUserCount(startTime, endTime));
         // 查询本日订单完成率
         Integer finishOrderCount =
-                workspaceMapper.getOrderCountByCondition(startTime, endTime, Collections.singletonList(Orders.COMPLETED));
+                workspaceMapper.getOrderCountByCondition(
+                        startTime, endTime, Orders.COMPLETED);
+        finishOrderCount = finishOrderCount == null ? 0 : finishOrderCount;
         Integer totalOrderCount = workspaceMapper.getOrderCountByCondition(startTime, endTime, null);
+        totalOrderCount = totalOrderCount == null ? 0 : totalOrderCount;
         businessDataVO.setOrderCompletionRate(totalOrderCount == 0 ? 0 : 1.0 * finishOrderCount / totalOrderCount);
         // 查询今日有效订单数、营业额、平均客单价
-        Map<String, Object> map = workspaceMapper.getTurnover(startTime, endTime, validStatus);
-        long count = map.get("count") == null ? 0 : (Long) map.get("count");
-        businessDataVO.setValidOrderCount((int)count);
-        businessDataVO.setTurnover(map.get("turnover") == null ? 0 : (Double) map.get("turnover"));
+        Map<String, Object> map = workspaceMapper.getTurnover(startTime, endTime, Orders.COMPLETED);
+        int count = map.get("count") == null ? 0 : ((Long) map.get("count")).intValue();
+        businessDataVO.setValidOrderCount(count);
+        businessDataVO.setTurnover(
+                map.get("turnover") == null ? 0.0 : ((BigDecimal) map.get("turnover")).doubleValue());
         if(businessDataVO.getValidOrderCount() > 0)
             businessDataVO.setUnitPrice(businessDataVO.getTurnover() / businessDataVO.getValidOrderCount());
         else

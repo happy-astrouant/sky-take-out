@@ -7,11 +7,8 @@
         select count(id) from orders
         <where>
             order_time >= #{startTime} and #{endTime} > order_time
-            <if test="statusList != null">
-                and status in
-                    <foreach collection="statusList" item="status" separator="," open="(" close=")">
-                        #{status}
-                    </foreach>
+            <if test="status != null">
+                and status = #{status}
             </if>
         </where>
     </select>
@@ -19,11 +16,8 @@
     <select id="getTurnover">
         select count(id) as  count, sum(amount) as turnover
         from orders where order_time >= #{startTime} and #{endTime} > order_time
-        <if test="statusList != null">
-            and status in
-            <foreach collection="statusList" item="status" separator="," open="(" close=")">
-                #{status}
-            </foreach>
+        <if test="status != null">
+            and status = #{status}
         </if>
     </select>
 </mapper>

@@ -16,10 +16,10 @@ public interface WorkspaceMapper {
     Integer getNewUserCount(LocalDateTime startTime, LocalDateTime endTime);
 
     //查询本日订单总数量 与 状态为完成的订单的数量
-    Integer getOrderCountByCondition(LocalDateTime startTime, LocalDateTime endTime, List<Integer> statusList);
+    Integer getOrderCountByCondition(LocalDateTime startTime, LocalDateTime endTime, Integer status);
 
     // 查询今日营业额度
-    Map<String, Object> getTurnover(LocalDateTime startTime, LocalDateTime endTime, List<Integer> statusList);
+    Map<String, Object> getTurnover(LocalDateTime startTime, LocalDateTime endTime, Integer status);
 
     @Select("select status, count(*) as count from dish group by status")
     List<Map<String, Object>> overviewDishes();
