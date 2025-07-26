@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.sky.constant.MessageConstant;
@@ -16,6 +17,7 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebsocketServer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +47,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderDetailMapper orderDetailMapper;
+
+    @Autowired
+    private WebsocketServer websocketServer;
 
     @Override
     @Transactional(readOnly = true)
@@ -286,6 +292,14 @@ public class OrderServiceImpl implements OrderService {
         vo.setTimeStamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         vo.setSignType("");
         vo.setPackageStr("");
+
+        // 支付成功后，推送订单消息
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", 1);  // 1 来单提醒
+        map.put("orderId", orders.getId());
+        map.put("content", "来单提醒：" + orders.getNumber());
+        // 转换为json格式
+        websocketServer.sendAll(JSON.toJSONString(map));
         return vo;
     }
 }
