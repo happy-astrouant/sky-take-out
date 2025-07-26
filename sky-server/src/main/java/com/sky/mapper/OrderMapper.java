@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.net.Inet4Address;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -31,4 +32,7 @@ public interface OrderMapper {
 
     @Select("select * from orders where number = #{orderNumber}")
     Orders getByOrderNumber(String orderNumber);
+
+    @Select("select * from orders where status = #{status} and order_time < #{orderTime}")
+    List<Orders> getByStatusAndOrderTimeLT(Integer pendingPayment, LocalDateTime localDateTime);
 }
