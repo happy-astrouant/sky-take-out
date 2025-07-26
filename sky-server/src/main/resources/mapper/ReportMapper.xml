@@ -21,7 +21,7 @@
     </select>
 
     <select id="userStatistics">
-        select date(create_time) as day, count(id) as number from user
+        select date(create_time) as day, count(id) as user_count from user
         where create_time >= #{begin} and #{end} > create_time
         group by day order by day
     </select>
@@ -33,7 +33,7 @@
     </select>
 
     <select id="orderStatistics">
-        select DATE(checkout_time) as day, count(*) as number from orders
+        select DATE(order_time) as day, count(*) as order_count from orders
         where order_time >= #{begin} and #{end} > order_time
         <if test="status != null">
             and status = #{status}

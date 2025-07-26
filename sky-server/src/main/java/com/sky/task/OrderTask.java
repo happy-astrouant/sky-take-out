@@ -28,11 +28,13 @@ public class OrderTask {
                         Orders.PENDING_PAYMENT,
                         LocalDateTime.now().plusMinutes(-15));
         // 设置状态为已取消
-        for(Orders orders : orderList){
-            orders.setStatus(Orders.CANCELLED);
-            orders.setCancelReason("订单长时间未支付，自动取消");
-            orders.setCancelTime(LocalDateTime.now());
-            orderMapper.updateOrder(orders);
+        if (orderList != null) {
+            for(Orders orders : orderList){
+                orders.setStatus(Orders.CANCELLED);
+                orders.setCancelReason("订单长时间未支付，自动取消");
+                orders.setCancelTime(LocalDateTime.now());
+                orderMapper.updateOrder(orders);
+            }
         }
     }
 
@@ -44,9 +46,12 @@ public class OrderTask {
         List<Orders> orderList = orderMapper.getByStatusAndOrderTimeLT(
                 Orders.DELIVERY_IN_PROGRESS,
                 LocalDateTime.now().plusDays(-1));
-        for(Orders orders: orderList){
-            orders.setStatus(Orders.COMPLETED);
-            orderMapper.updateOrder(orders);
+        if(orderList != null){
+            for(Orders orders: orderList){
+                orders.setStatus(Orders.COMPLETED);
+                orderMapper.updateOrder(orders);
+            }
         }
+
     }
 }

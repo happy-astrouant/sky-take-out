@@ -1,10 +1,14 @@
 package com.sky.service.impl;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.datatype.jsr310.DecimalUtils;
 import com.sky.entity.Orders;
 import com.sky.mapper.ReportMapper;
 import com.sky.service.ReportService;
@@ -23,6 +27,14 @@ public class ReportServiceImpl implements ReportService {
 
     @Autowired
     private ReportMapper reportMapper;
+
+    private void convertDateToLocalDate(List<Map<String, Object>> maps){
+        for(Map<String, Object> map : maps){
+            // 获取数据库查询结果中的Date对象
+            java.sql.Date date = (java.sql.Date) map.get("day");
+            map.put("day", date.toLocalDate());
+        }
+    }
 
     @Override
     public SalesTop10ReportVO top10(LocalDate begin, LocalDate end) {
@@ -47,6 +59,7 @@ public class ReportServiceImpl implements ReportService {
         LocalDateTime endTime = end.atStartOfDay().plusDays(1);
         int totalNum = reportMapper.getUserNumBefore(beginTime);
         List<Map<String, Object>> list = reportMapper.userStatistics(beginTime, endTime);
+        convertDateToLocalDate(list);
         // 有可能会有缺少日期的情况，所以需要补全
         StringBuilder dateList = new StringBuilder();
         StringBuilder totalUserList = new StringBuilder();
@@ -56,8 +69,8 @@ public class ReportServiceImpl implements ReportService {
         for(LocalDate date = begin; date.isBefore(end) || date.isEqual(end); date = date.plusDays(1)){
             dateList.append(date).append(",");
             int dayCount = 0;
-            if(list.size() > i && date.equals(list.get(i).get("day"))){
-                dayCount = ((Long) list.get(0).get("number")).intValue();
+            if(list.size() > i && list.get(i).get("day").equals(date)){
+                dayCount = ((Long) list.get(i).get("user_count")).intValue(); // 修复：应该是i而不是0
                 totalNum += dayCount;
                 i++;
             }
@@ -76,17 +89,18 @@ public class ReportServiceImpl implements ReportService {
         LocalDateTime endTime = end.atStartOfDay().plusDays(1);
 
         List<Map<String, Object>> list = reportMapper.turnoverStatistics(beginTime, endTime);
+        convertDateToLocalDate(list);
 
         StringBuilder dateList = new StringBuilder();
         StringBuilder turnoverList = new StringBuilder();
         int i = 0;
-        for(LocalDate start = begin; start.isBefore(end) || start.isEqual(end); start = start.plusDays(1)){
+        for(LocalDate date = begin; date.isBefore(end) || date.isEqual(end); date = date.plusDays(1)){
             double dayAmount = 0;
-            if(list.size() > i &&  start.equals(list.get(i).get("day"))){
-                dayAmount = ((Long) list.get(i).get("turnover")).intValue();
+            if(list.size() > i && date.equals(list.get(i).get("day"))){
+                dayAmount = ((BigDecimal) list.get(i).get("turnover")).doubleValue();
             }
             turnoverList.append(dayAmount).append(",");
-            dateList.append(start).append(",");
+            dateList.append(date).append(",");
         }
         turnoverList.deleteCharAt(turnoverList.length() - 1);
         dateList.deleteCharAt(dateList.length() - 1);
@@ -102,7 +116,9 @@ public class ReportServiceImpl implements ReportService {
         int orderNum = reportMapper.getTotalOrderNum(beginTime, endTime, null);
         int validOrderNum = reportMapper.getTotalOrderNum(beginTime, endTime, Orders.COMPLETED);
         List<Map<String, Object>> orderList = reportMapper.orderStatistics(beginTime, endTime, null);
+        convertDateToLocalDate(orderList);
         List<Map<String, Object>> paidOrderList = reportMapper.orderStatistics(beginTime, endTime, Orders.COMPLETED);
+        convertDateToLocalDate(paidOrderList);
         // 先设置基本类型变量
         OrderReportVO vo = new OrderReportVO();
         vo.setValidOrderCount(validOrderNum);
@@ -113,18 +129,18 @@ public class ReportServiceImpl implements ReportService {
         StringBuilder dateList = new StringBuilder();
         StringBuilder orderCountList = new StringBuilder();
         StringBuilder validOrderCountList = new StringBuilder();
-        for(LocalDate start = begin; start.isBefore(end) || start.isEqual(end); start = start.plusDays(1)){
+        for(LocalDate date = begin; date.isBefore(end) || date.isEqual(end); date = date.plusDays(1)){
             int dayOrderNum = 0;
-            if(orderList.size() > i && start.equals(orderList.get(i).get("day"))){
+            if(orderList.size() > i && date.equals(orderList.get(i).get("day"))){
                 dayOrderNum = ((Long) orderList.get(i).get("order_count")).intValue();
                 i++;
             }
             int dayValidOrderNum = 0;
-            if(paidOrderList.size() > j && start.equals(paidOrderList.get(j).get("day"))){
+            if(paidOrderList.size() > j && date.equals(paidOrderList.get(j).get("day"))){
                 dayValidOrderNum = ((Long) paidOrderList.get(j).get("order_count")).intValue();
                 j++;
             }
-            dateList.append(start).append(",");
+            dateList.append(date).append(",");
             orderCountList.append(dayOrderNum).append(",");
             validOrderCountList.append(dayValidOrderNum).append(",");
         }

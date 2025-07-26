@@ -25,10 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -63,8 +60,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public void cancel(OrdersCancelDTO ordersCancelDTO) {
-        Orders order = new Orders();
+        Orders order = orderMapper.getById(ordersCancelDTO.getId());
+        // 模拟退款，实际应当等待退款成功，wexin回调再修改状态
+        if(order.getPayStatus().equals(Orders.PAID)){
+            order.setPayStatus(Orders.REFUND);
+        }
+        order.setCancelReason(ordersCancelDTO.getCancelReason());
         BeanUtils.copyProperties(ordersCancelDTO, order);
         order.setStatus(OrderVO.CANCELLED);
         order.setCancelTime(LocalDateTime.now());
@@ -72,12 +75,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public void rejection(OrdersRejectionDTO ordersRejectionDTO) {
-        Orders order = new Orders();
-        BeanUtils.copyProperties(ordersRejectionDTO, order);
-         order.setStatus(OrderVO.CANCELLED);
-         order.setCancelTime(LocalDateTime.now());
-         orderMapper.updateOrder(order);
+        Orders order = orderMapper.getById(ordersRejectionDTO.getId());
+        // 模拟退款操作 实际应当等待微信退款程序回调
+        if(order.getPayStatus().equals(OrderVO.PAID)){
+            order.setPayStatus(OrderVO.REFUND);
+        }
+        order.setRejectionReason(ordersRejectionDTO.getRejectionReason());
+        order.setStatus(OrderVO.CANCELLED);
+        order.setCancelTime(LocalDateTime.now());
+        orderMapper.updateOrder(order);
     }
 
     @Override
@@ -95,16 +103,17 @@ public class OrderServiceImpl implements OrderService {
         orderStatisticsVO.setConfirmed(0);
         orderStatisticsVO.setToBeConfirmed(0);
         orderStatisticsVO.setDeliveryInProgress(0);
+        if(maps == null) return orderStatisticsVO;
         for(Map<String, Object>map: maps){
             switch (map.get("status").toString()){
                 case "2":
-                    orderStatisticsVO.setToBeConfirmed((Integer) map.getOrDefault("count", 0));
+                    orderStatisticsVO.setToBeConfirmed(((Long) map.get("count")).intValue());
                     break;
                 case "3":
-                    orderStatisticsVO.setConfirmed((Integer) map.getOrDefault("count", 0));
+                    orderStatisticsVO.setConfirmed(((Long) map.get("count")).intValue());
                     break;
                 case "4":
-                    orderStatisticsVO.setDeliveryInProgress((Integer) map.getOrDefault("count", 0));
+                    orderStatisticsVO.setDeliveryInProgress(((Long) map.get("count")).intValue());
                     break;
             }
         }
@@ -151,14 +160,18 @@ public class OrderServiceImpl implements OrderService {
         if(!dishBuilder.isEmpty()){
             // 头部插入菜品：
             dishBuilder.insert(0, "菜品：");
-            dishBuilder.deleteCharAt(dishBuilder.length() - 1);
-            dishBuilder.append(". ");
+            // 删除末尾的逗号空格（两个字符）
+            dishBuilder.delete(dishBuilder.length() - 2, dishBuilder.length());
+            dishBuilder.append(".");
+            if(!setmealBuilder.isEmpty()){
+                dishBuilder.append("\r\n");
+            }
         }
         if(!setmealBuilder.isEmpty()){
             // 头部插入套餐：
             setmealBuilder.insert(0, "套餐：");
-            setmealBuilder.deleteCharAt(setmealBuilder.length() - 1);
-            setmealBuilder.append(". ");
+            setmealBuilder.delete(setmealBuilder.length() - 2, setmealBuilder.length());
+            setmealBuilder.append(".");
         }
         return dishBuilder.append(setmealBuilder).toString();
     }
@@ -282,6 +295,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderPaymentVO payment(OrdersPaymentDTO dto) {
         Orders orders = orderMapper.getByOrderNumber(dto.getOrderNumber());
+        orders.setStatus(Orders.TO_BE_CONFIRMED);
         orders.setPayStatus(Orders.PAID);
         orders.setCheckoutTime(LocalDateTime.now());
         orders.setPayMethod(dto.getPayMethod());
