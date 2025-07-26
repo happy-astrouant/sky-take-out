@@ -34,4 +34,6 @@ public interface OrderService {
     void repetition(Long id);
 
     OrderPaymentVO payment(OrdersPaymentDTO dto);
+
+    void reminder(Long id);
 }

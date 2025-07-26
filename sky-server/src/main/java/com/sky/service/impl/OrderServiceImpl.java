@@ -302,4 +302,16 @@ public class OrderServiceImpl implements OrderService {
         websocketServer.sendAll(JSON.toJSONString(map));
         return vo;
     }
+
+    @Override
+    public void reminder(Long id) {
+        Orders orders = orderMapper.getById(id);
+        // 支付成功后，推送订单消息
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", 2);  // 2 催单提醒
+        map.put("orderId", orders.getId());
+        map.put("content", "来单提醒：" + orders.getNumber());
+        // 转换为json格式
+        websocketServer.sendAll(JSON.toJSONString(map));
+    }
 }
